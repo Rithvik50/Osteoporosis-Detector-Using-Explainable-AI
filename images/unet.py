@@ -44,7 +44,7 @@ def main():
 
     hip_ids, images_by_name, images_by_id, anns_by_img = load_coco(str(coco_path))
 
-    # map filenames in folder to COCO image entries
+    
     files = [p for p in img_dir.iterdir() if p.suffix.lower() in IMG_EXTS and p.name != "_annotations.coco.json"]
     files = sorted(files, key=lambda p: p.name)
 
@@ -84,11 +84,10 @@ def main():
             if isinstance(seg, list) and len(seg) > 0:
                 mask_coco = np.maximum(mask_coco, polygons_to_mask(seg, Hc, Wc))
             else:
-                # If RLE appears, consider pycocotools.coco.COCO.annToMask for decoding.
-                # For now, skip non-polygon entries.
+ 
                 pass
 
-        # Resize to the actual image size (handles any mismatch)
+        
         h0, w0 = img.shape[:2]
         mask = cv2.resize(mask_coco, (w0, h0), interpolation=cv2.INTER_NEAREST)
 
