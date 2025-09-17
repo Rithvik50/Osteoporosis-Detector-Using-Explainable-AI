@@ -66,17 +66,17 @@ def unletterbox_mask(mask, original_shape, scale, crop_info):
     top, left, nh, nw = crop_info
     oh, ow = original_shape
     
-    # Extract the resized portion from letterbox
+   
     resized_mask = mask[top:top+nh, left:left+nw]
     
-    # Resize back to original dimensions
+    
     original_mask = cv2.resize(resized_mask, (ow, oh), interpolation=cv2.INTER_NEAREST)
     
     return original_mask
 
 def predict_image(model, image_path, img_size=512, device='cpu', threshold=0.5):
     """Predict mask for a single image"""
-    # Load image
+   
     img = cv2.imread(str(image_path), cv2.IMREAD_GRAYSCALE)
     if img is None:
         raise ValueError(f"Could not load image: {image_path}")
@@ -84,25 +84,25 @@ def predict_image(model, image_path, img_size=512, device='cpu', threshold=0.5):
     original_shape = img.shape
     print(f"Original image shape: {original_shape}")
     
-    # Preprocess (same as training)
+    
     img_resized, scale, crop_info = letterbox_resize(img, img_size)
     
-    # Convert to tensor
+    
     x = torch.from_numpy(img_resized).float().unsqueeze(0).unsqueeze(0) / 255.0  # 1x1xHxW
     x = x.to(device)
     
-    # Predict
+   
     model.eval()
     with torch.no_grad():
         logits = model(x)
         probs = torch.sigmoid(logits)
         pred_mask = (probs > threshold).float()
     
-    # Convert back to numpy
+    
     pred_mask_np = pred_mask.squeeze().cpu().numpy().astype(np.uint8) * 255
     probs_np = probs.squeeze().cpu().numpy()
     
-    # Resize both mask and probability map back to original dimensions
+    
     final_mask = unletterbox_mask(pred_mask_np, original_shape, scale, crop_info)
     final_probs = unletterbox_mask((probs_np * 255).astype(np.uint8), original_shape, scale, crop_info) / 255.0
     

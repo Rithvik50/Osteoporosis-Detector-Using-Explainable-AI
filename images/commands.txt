@@ -1,0 +1,16 @@
+infer_crops.py --> To test working of the model provide it an iamge in this case 1-2-392-200036-9107-307-30301-20231105-121150-1037831-1-_jpg.rf.c786d78636f7788aa1137dfa773f93bf.jpg this image is inside test folder 
+python infer_crop.py --model_path checkpoints/best.pt --image_path test/1-2-392-200036-9107-307-30301-20220517-140218-1012580_jpg.rf.288b98f7d0cf294f3f5dfd0d17c1e3bb --save_overlay
+
+train_unet.py --> Trains UNET model for unseen data using X-RAY mask pairs Created by unet.py earlier. Model will be stored in checkpoints
+python train_unet.py --images_dir train
+
+unet.py --> Creates Binary Masks for each X-RAY image using _annotations.coco.json file
+python unet.py --images_dir "train" --coco "train/_annotations.coco.json" --out_dir "train"
+
+
+Pridiction Output of binary Mask for image will be in Predictions directory
+
+
+
+
+
