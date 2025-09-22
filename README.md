@@ -1,9 +1,8 @@
 # Osteoporosis Detector Using Explainable AI
-## Overview
 
 This is a deep learning generative AI model that will produce a classification of Osteoporotic stage from analyzing an X-ray of a patient's femur.
 
-## Osteoporosis
+## Overview
 
 Osteoporosis is the gradual deterioration of bone structure with time. As age increases, vital vitamins and minerals needed to maintain bone health decrease, leading to weak and brittle bones that are easily susceptible to fractures.
 
