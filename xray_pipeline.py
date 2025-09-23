@@ -81,3 +81,10 @@ if __name__ == "__main__":
 
     # Show masked X-ray
     masked_img.show()
+
+# Command to run:
+# python3 xray_pipeline.py \
+#   --img sample_xray.jpg \
+#   --unet unet_model.pt \ 
+#   --resnet resnet34_model.pt \ 
+#   --device cuda
