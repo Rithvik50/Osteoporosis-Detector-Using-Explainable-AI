@@ -63,7 +63,7 @@ def xray_pipeline(unet, resnet, img_path, device="cpu"):
 
 # ----- CLI -----
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Osteoporosis Pipeline: UNet + ResNet Singh Index Classifier")
+    parser = argparse.ArgumentParser(description="Xray Pipeline: UNet + ResNet Singh Index Classifier")
     parser.add_argument("--img", type=str, required=True, help="Path to input X-ray image")
     parser.add_argument("--unet", type=str, required=True, help="Path to trained UNet .pth model")
     parser.add_argument("--resnet", type=str, required=True, help="Path to trained ResNet .pth model")
@@ -83,8 +83,4 @@ if __name__ == "__main__":
     masked_img.show()
 
 # Command to run:
-# python3 xray_pipeline.py \
-#   --img sample_xray.jpg \
-#   --unet unet_model.pt \ 
-#   --resnet resnet34_model.pt \ 
-#   --device cuda
+# python3 xray_pipeline.py --img sample_xray.jpg --unet unet_model.pt --resnet resnet34_model.pt --device cuda
