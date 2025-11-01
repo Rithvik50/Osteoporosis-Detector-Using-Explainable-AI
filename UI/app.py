@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
-
+from pathlib import Path
 from ensemble_stacking import StackingEnsembleOptuna, MultiLabelEncoder
 
 import lime
@@ -15,6 +15,8 @@ import shap
 # Page config
 st.set_page_config(page_title="Osteoporosis Predictor", layout="wide")
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+bg_path = BASE_DIR/"UI"/"static"/"bg.png"
 
 @st.cache_resource
 def load_model():
@@ -965,7 +967,7 @@ if st.session_state.page == 'input':
 
                     st.error(traceback.format_exc())
 
-        set_background(r'C:\Users\reuad\Documents\CAPSTONE\Ensemble Stacking\UI_Ensemble\static\bg.png')
+        set_background(bg_path)
 
 # ==================== RESULTS PAGE ====================
 elif st.session_state.page == 'results':
@@ -1166,4 +1168,4 @@ elif st.session_state.page == 'results':
 
         st.markdown("</div>", unsafe_allow_html=True)
 
-    set_background(r'C:\Users\reuad\Documents\CAPSTONE\Ensemble Stacking\UI_Ensemble\static\bg.png')
+    set_background(bg_path)
