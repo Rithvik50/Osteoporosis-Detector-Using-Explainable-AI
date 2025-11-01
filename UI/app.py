@@ -46,7 +46,7 @@ def load_training_data():
         "rheumatoid_arthritis", "secondary_osteoporosis",
         "parent_hip_fracture", "prior_fracture", "bisphosphonate_use",
         "calcium_supplement", "vitamin_d_supplement", "glucocorticoid_use",
-        "dialysis", "falls_past_year"  # ADD THIS
+        "dialysis", "falls_past_year"
     ]
 
     # Only keep columns that are in expected_features
@@ -216,7 +216,7 @@ def explain_with_shap(model, instance_series, shap_explainer, feature_names, sha
     try:
         shap_values = shap_explainer.shap_values(
             instance_array,
-            nsamples=100  # Reduce from default (auto) to speed up
+            nsamples=100
         )
     except Exception as e:
         print(f"Error computing SHAP values: {e}")
@@ -235,7 +235,7 @@ def explain_with_shap(model, instance_series, shap_explainer, feature_names, sha
 
         # Get SHAP values for predicted class
         if len(shap_values) > prediction:
-            values = shap_values[prediction][0]  # Get first (and only) sample
+            values = shap_values[prediction][0]
         else:
             values = shap_values[0][0]
     elif hasattr(shap_values, 'values'):
@@ -446,89 +446,90 @@ if st.session_state.page == 'input':
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     
-    /* Upload area container - DEFAULT SIZE (no image) */
+    /* ============================================ */
+    /* UPLOAD AREA CONTAINER - FIXED POSITIONING */
+    /* ============================================ */
     div[data-testid="column"]:first-child {
         position: fixed !important;
-        left: 250px !important;
-        top: 250px !important;
-        width: 950px !important;
-        height: 550px !important;
+        left: 17vw !important;
+        top: 50vh !important;
+        transform: translateY(-50%) !important;
+        width: 55vw !important;
+        max-width: 850px !important;
+        height: auto !important;
+        min-height: 480px !important;
+        max-height: 600px !important;
         border-radius: 40px;
-        padding: 55px 75px;
+        padding: 45px 60px !important;
         background: rgba(255, 255, 255, 0.05);
         backdrop-filter: blur(15px);
         border: 1px solid rgba(255, 255, 255, 0.3);
         box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
         z-index: 1;
-        transition: height 0.3s ease, top 0.3s ease !important;
+        transition: all 0.3s ease !important;
+        overflow: visible !important;
+        display: flex !important;
+        flex-direction: column !important;
     }
     
-    
-    /* EXPANDED SIZE when image is present - shift up to stay centered */
-    div[data-testid="column"]:first-child:has([data-testid="stImage"]) {
-        height: 650px !important;
-        top: 200px !important;
-        padding-bottom: 60px !important;
-    }
-    
-    /* Title styling - reduced size */
+    /* Title styling */
     div[data-testid="column"]:first-child h3 {
         color: white !important;
-        font-weight: 600;
-        font-size: 2.3rem !important;
+        font-weight: 600 !important;
+        font-size: 2.0rem !important;
         margin-bottom: 3px !important;
         margin-top: 0 !important;
+        writing-mode: horizontal-tb !important;
+        text-orientation: mixed !important;
     }
 
     div[data-testid="column"]:first-child p {
-        color: rgba(255, 255, 255, 0.8);
-        font-size: 0.85rem;
-        margin-bottom: 25px !important;
+        color: rgba(255, 255, 255, 0.8) !important;
+        font-size: 0.8rem !important;
+        margin-bottom: 20px !important;
         margin-top: 0 !important;
+        writing-mode: horizontal-tb !important;
     }
 
-    /* Make the file uploader fill and style the space - SMALLER */
+    /* File uploader styling - centered */
     div[data-testid="column"]:first-child [data-testid="stFileUploader"] {
-        bottom: 200px !important;
-        height: 330px !important;
-        left: 100px !important;
-        width: 800px !important;
+        position: relative !important;
+        height: 280px !important;
+        width: 100% !important;
+        max-width: 700px !important;
+        margin: 0 auto !important;
         border-radius: 35px !important;
         background: rgba(255, 255, 255, 0.08) !important;
         backdrop-filter: blur(20px);
-        border: 2px  rgba(255, 255, 255, 0.3) !important;
+        border: 2px solid rgba(255, 255, 255, 0.3) !important;
         padding: 0px !important;
-        margin: 0 !important;
     }
 
-    /* Remove extra spacing in the dropzone */
+    /* Dropzone styling - centered content */
     div[data-testid="column"]:first-child [data-testid="stFileUploaderDropzone"] {
         background: transparent !important;
         border: none !important;
         height: 100% !important;
-        min-height: 320px !important;
+        min-height: 280px !important;
         display: flex !important;
         align-items: center !important;
-        justify-content: flex-start !important;
+        justify-content: center !important;
         flex-direction: column !important;
-        padding-top: 90px !important;
-        gap: 8px !important;
+        padding: 0 !important;
+        gap: 12px !important;
     }
 
-    /* Remove spacing from dropzone sections */
     div[data-testid="column"]:first-child [data-testid="stFileUploaderDropzone"] > div {
         margin: 0 !important;
         padding: 0 !important;
     }
 
-    /* Tighten up the text and icon spacing */
     div[data-testid="column"]:first-child [data-testid="stFileUploaderDropzone"] svg {
         margin-bottom: 8px !important;
         width: 48px !important;
         height: 48px !important;
     }
 
-    /* Move elements closer together */
     div[data-testid="column"]:first-child [data-testid="stFileUploaderDropzone"] section {
         display: flex !important;
         flex-direction: column !important;
@@ -539,7 +540,7 @@ if st.session_state.page == 'input':
         padding: 0 !important;
     }
 
-    /* Style the upload prompt text */
+    /* Upload text styling */
     div[data-testid="column"]:first-child [data-testid="stFileUploader"] label,
     div[data-testid="column"]:first-child [data-testid="stFileUploader"] small,
     div[data-testid="column"]:first-child [data-testid="stFileUploader"] span {
@@ -547,7 +548,7 @@ if st.session_state.page == 'input':
         font-size: 0.95rem !important;
     }
 
-    /* Browse button styling - removed top margin */
+    /* Browse button */
     div[data-testid="column"]:first-child [data-testid="stFileUploader"] button {
         background: rgba(255, 255, 255, 0.15) !important;
         border: 1px solid rgba(255, 255, 255, 0.3) !important;
@@ -567,41 +568,7 @@ if st.session_state.page == 'input':
         transition: all 0.2s ease;
     }
 
-    /* Image preview styling - adjusted for smaller container */
-    div[data-testid="column"]:first-child [data-testid="stImage"] {
-        margin-top: 15px;
-        border-radius: 15px;
-        overflow: hidden;
-        max-height: 280px;
-    }
-
-    div[data-testid="column"]:first-child [data-testid="stImage"] img {
-        max-height: 280px !important;
-        border-radius: 15px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    }
-    
-    /* ============================================ */
-    /* IMAGE PREVIEW CONTAINER - INCREASED SIZE */
-    /* ============================================ */
-    
-    div[data-testid="column"]:first-child [data-testid="stImage"] {
-        margin-top: 0px !important;
-        margin-bottom: 15px !important;
-        border-radius: 35px !important;
-        overflow: hidden;
-        max-height: 340px !important;
-        height: 340px !important;
-        background: rgba(255, 255, 255, 0.08) !important;
-        backdrop-filter: blur(20px);
-        border: 2px solid rgba(255, 255, 255, 0.3) !important;
-        padding: 20px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
-
-    /* Image preview container - larger to accommodate button */
+    /* Image preview container */
     div[data-testid="column"]:first-child [data-testid="stImage"] {
         margin-top: 0px !important;
         margin-bottom: 10px !important;
@@ -630,61 +597,12 @@ if st.session_state.page == 'input':
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
 
-    /* Hide caption */
     div[data-testid="column"]:first-child [data-testid="stImage"] figcaption {
         display: none !important;
     }
     
-    /* ============================================ */
-    /* FROSTED GLASS BUTTON - "Upload Different Image" */
-    /* ============================================ */
-    
-    /* Target the "change_xray" button specifically */
-    div[data-testid="column"]:first-child button[key="change_xray"] {
-        background: rgba(255, 255, 255, 0.1) !important;
-        backdrop-filter: blur(10px) !important;
-        -webkit-backdrop-filter: blur(10px) !important;
-        border: 1px solid rgba(255, 255, 255, 0.3) !important;
-        color: white !important;
-        border-radius: 12px !important;
-        
-        /* PADDING - Adjust these for more space around text */
-        padding: 14px 40px !important;  /* vertical: 14px, horizontal: 40px */
-        
-        /* CENTERING */
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        
-        /* SIZING */
-        min-width: 220px !important;
-        min-height: 48px !important;
-        width: fit-content !important;
-        
-        /* FONT */
-        font-family: 'Lexend Giga', sans-serif !important;
-        font-weight: 300 !important;
-        font-size: 0.95rem !important;
-        letter-spacing: 0.8px !important;
-        line-height: 1.4 !important;
-        text-align: center !important;
-        text-transform: none !important;
-        
-        /* POSITIONING */
-        margin: 15px auto 0px auto !important;
-        
-        /* EFFECTS */
-        transition: all 0.3s ease !important;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
-    }
-    
-    div[data-testid="column"]:first-child button[key="change_xray"]:hover {
-        background: rgba(255, 255, 255, 0.2) !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25) !important;
-    }
-    
-    /* Override Streamlit's default button styling */
+    /* Change image button styling */
+    div[data-testid="column"]:first-child button[key="change_xray"],
     div[data-testid="column"]:first-child button[kind="secondary"],
     div[data-testid="column"]:first-child button[kind="primary"],
     div[data-testid="column"]:first-child button[data-baseweb="button"] {
@@ -694,17 +612,13 @@ if st.session_state.page == 'input':
         border: 1px solid rgba(255, 255, 255, 0.3) !important;
         color: white !important;
         border-radius: 12px !important;
-        
         padding: 14px 40px !important;
-        
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        
         min-width: 220px !important;
         min-height: 48px !important;
         width: fit-content !important;
-        
         font-family: 'Lexend Giga', sans-serif !important;
         font-weight: 300 !important;
         font-size: 0.95rem !important;
@@ -712,13 +626,12 @@ if st.session_state.page == 'input':
         line-height: 1.4 !important;
         text-align: center !important;
         text-transform: none !important;
-        
         margin: 15px auto 0px auto !important;
-        
         transition: all 0.3s ease !important;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
     }
     
+    div[data-testid="column"]:first-child button[key="change_xray"]:hover,
     div[data-testid="column"]:first-child button[kind="secondary"]:hover,
     div[data-testid="column"]:first-child button[kind="primary"]:hover,
     div[data-testid="column"]:first-child button[data-baseweb="button"]:hover {
@@ -727,7 +640,6 @@ if st.session_state.page == 'input':
         box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25) !important;
     }
     
-    /* Make sure button text is styled */
     div[data-testid="column"]:first-child button p,
     div[data-testid="column"]:first-child button span,
     div[data-testid="column"]:first-child button div {
@@ -736,32 +648,44 @@ if st.session_state.page == 'input':
         font-size: 0.95rem !important;
         letter-spacing: 0.8px !important;
         color: white !important;
-        margin: 0 !important;  /* Remove default margins */
-        padding: 0 !important; /* Remove default padding */
+        margin: 0 !important;
+        padding: 0 !important;
     }
 
-    /*---------------------------*/
-    /* FORM POSITIONING */
-    /*---------------------------*/
+    /* ============================================ */
+    /* FORM HEADER AND POSITIONING */
+    /* ============================================ */
+    
+    .form-header-text {
+        position: fixed !important;
+        right: 5vw !important;
+        top: 7vh !important;
+        z-index: 3 !important;
+        width: auto !important;
+    }
     
     .form-header-text h1 {
         color: white !important;
-        padding-left: 1320px !important;
-        font-family: 'Lexend Giga', sans-serif;
+        font-family: 'Lexend Giga', sans-serif !important;
         font-weight: 200 !important;
         font-size: 2.0rem !important;
         margin: 0 !important;
-        letter-spacing: 1px;
+        letter-spacing: 1px !important;
+        writing-mode: horizontal-tb !important;
+        text-orientation: mixed !important;
+        white-space: nowrap !important;
     }
+    
+    /* Form container positioning */
     div[data-testid="column"]:last-child [data-testid="stForm"] {
         position: fixed !important;
-        right: 100px !important;
-        top: 150px !important;
-        bottom: 80px !important;
-        width: 350px !important;
-        max-width: 350px !important;
-        min-width: 350px !important;
-        max-height: calc(100vh - 180px) !important;
+        right: 5vw !important;
+        top: 50vh !important;
+        transform: translateY(-50%) !important;
+        width: 22vw !important;
+        min-width: 320px !important;
+        max-width: 380px !important;
+        max-height: 70vh !important;
         border-radius: 40px;
         padding: 25px 20px;
         background: rgba(255, 255, 255, 0.05);
@@ -772,6 +696,7 @@ if st.session_state.page == 'input':
         z-index: 2;
     }
 
+    /* Scrollbar styling */
     [data-testid="stForm"]::-webkit-scrollbar {width: 6px;}
     [data-testid="stForm"]::-webkit-scrollbar-track {
         background: rgba(255, 255, 255, 0.1); 
@@ -782,6 +707,7 @@ if st.session_state.page == 'input':
         border-radius: 10px;
     }
 
+    /* Form inputs styling */
     [data-testid="stForm"] input, 
     [data-testid="stForm"] select {
         background: rgba(255, 255, 255, 0.2) !important;
@@ -792,6 +718,12 @@ if st.session_state.page == 'input':
     [data-testid="stForm"] label {
         color: white !important; 
         font-size: 14px;
+    }
+    
+    /* Ensure all text elements are horizontal */
+    * {
+        writing-mode: horizontal-tb !important;
+        text-orientation: mixed !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -827,9 +759,7 @@ if st.session_state.page == 'input':
             except Exception as e:
                 st.error(f"Error loading image: {e}")
                 st.session_state['uploaded_xray'] = None
-# ------------------ INSERTED UPLOADER SNIPPET END ------------------
 
-    st.markdown("</div></div>", unsafe_allow_html=True)
     with col_form:
         st.markdown('<div class="form-header-text"><h1>OSTEOPOROSIS DETECTOR</h1></div>', unsafe_allow_html=True)
         with st.form("prediction_form"):
@@ -848,7 +778,7 @@ if st.session_state.page == 'input':
                 inputs["hip_cm"] = st.number_input("Hip (cm)", min_value=50.0, max_value=200.0, value=100.0)
 
             with tab2:
-                st.info("👩 Female patients only — these fields are ignored for males")
+                st.info("👩 Female patients only – these fields are ignored for males")
                 inputs["menopausal_status"] = st.radio("Menopausal Status", ["Pre", "Peri", "Post"], horizontal=True)
                 inputs["menopause_age"] = st.number_input("Menopause Age", min_value=0.0, max_value=70.0, value=0.0)
                 inputs["estrogen_use"] = st.radio("Estrogen Use", ["Yes", "No"], horizontal=True)
@@ -864,7 +794,6 @@ if st.session_state.page == 'input':
                 inputs["rheumatoid_arthritis"] = st.radio("Rheumatoid Arthritis?", ["Yes", "No"], horizontal=True, index=1)
                 inputs["secondary_osteoporosis"] = st.radio("Secondary Osteoporosis?", ["Yes", "No"], horizontal=True,
                                                             index=1)
-                # ADD THIS NEW INPUT
                 inputs["falls_past_year"] = st.number_input(
                     "Falls in Past Year",
                     min_value=0,
@@ -930,7 +859,7 @@ if st.session_state.page == 'input':
                     val = str(processed_inputs.get(field, "")).strip().lower()
                     processed_inputs[field] = 1 if val in ["yes", "true", "1"] else 0
 
-                # Convert categorical to match training format (from snippet.txt: F/M not f/m)
+                # Convert categorical to match training format
                 processed_inputs["sex"] = "F" if inputs["sex"] == "Female" else "M"
                 processed_inputs["menopausal_status"] = str(processed_inputs["menopausal_status"]).lower()
                 processed_inputs["physical_activity"] = str(processed_inputs["physical_activity"]).lower()
@@ -964,7 +893,6 @@ if st.session_state.page == 'input':
                 except Exception as e:
                     st.error(f"Prediction failed: {e}")
                     import traceback
-
                     st.error(traceback.format_exc())
 
         set_background(bg_path)
@@ -975,21 +903,46 @@ elif st.session_state.page == 'results':
 
     st.markdown("""
     <style>
-    .results-container {
-        position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);
-        width: 90%; max-width: 1200px; max-height: 90vh;
-        border-radius: 40px; padding: 40px;
-        background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        overflow-y: auto; overflow-x: hidden;
+    /* Hide the upload containers from input page */
+    div[data-testid="column"]:first-child {
+        display: none !important;
     }
-    .results-container::-webkit-scrollbar {width: 8px;}
-    .results-container::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.1); border-radius: 10px;
+    
+    /* Style for Make Another Prediction button - match Predict button */
+    .stButton > button {
+        background: rgba(255, 255, 255, 0.1) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        color: white !important;
+        border-radius: 12px !important;
+        padding: 14px 40px !important;
+        font-family: 'Lexend Giga', sans-serif !important;
+        font-weight: 300 !important;
+        font-size: 0.95rem !important;
+        letter-spacing: 0.8px !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+        width: auto !important;
+        min-width: 250px !important;
+        margin: 0 auto !important;
+        display: block !important;
     }
-    .results-container::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, , 0.4); border-radius: 10px;
+    
+    .stButton > button:hover {
+        background: rgba(255, 255, 255, 0.2) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25) !important;
     }
+    
+    /* Center button container */
+    .stButton {
+        display: flex !important;
+        justify-content: center !important;
+        width: 100% !important;
+    }
+    
+    /* Remove the blurry container box */
     .prediction-box {
         background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px);
         padding: 2rem; border-radius: 20px;
@@ -1030,8 +983,6 @@ elif st.session_state.page == 'results':
         probabilities = pred_data['probabilities']
         input_df = pred_data['input_df']
 
-        st.markdown("<div cass='results-container'>", unsafe_allow_html=True)
-
         # Display prediction
         st.markdown(f"""
         <div class='prediction-box'>
@@ -1056,20 +1007,14 @@ elif st.session_state.page == 'results':
         </div>
         """, unsafe_allow_html=True)
 
-        # Load training data and create explainers ONCE
+        # Load training data and create explainers
         try:
             X_train = load_training_data()
-
-            # Verify feature count matches
-            #st.write(f"Debug: Training data has {len(X_train.columns)} features")
-            #st.write(f"Debug: Input data has {len(input_df.columns)} features")
-
             lime_explainer, lime_encoders = create_lime_explainer(model, X_train)
             shap_explainer, feature_names, shap_encoders = create_shap_explainer(model, X_train)
         except Exception as e:
             st.error(f"Failed to initialize explainers: {e}")
             import traceback
-
             st.error(traceback.format_exc())
             lime_explainer = None
             shap_explainer = None
@@ -1084,11 +1029,7 @@ elif st.session_state.page == 'results':
 
             with st.spinner("Generating LIME explanation..."):
                 try:
-                    # Use the FULL instance with all features (including vitamin_d_missing)
                     instance = input_df.iloc[0]
-
-                    #st.write(f"Debug: Instance has {len(instance)} features")
-
                     features_lime, weights, _ = explain_with_lime(
                         model, instance, lime_explainer, lime_encoders, num_features=10
                     )
@@ -1098,7 +1039,6 @@ elif st.session_state.page == 'results':
                 except Exception as e:
                     st.error(f"LIME explanation failed: {e}")
                     import traceback
-
                     st.error(traceback.format_exc())
 
             st.markdown("</div>", unsafe_allow_html=True)
@@ -1111,10 +1051,8 @@ elif st.session_state.page == 'results':
                 "<p style='color: rgba(255, 255, 255, 0.9);'>Game-theoretic approach to explain individual predictions.</p>",
                 unsafe_allow_html=True)
 
-            # In the SHAP Explanation section (around line 1030)
             with st.spinner("Generating SHAP explanation (this may take 30-60 seconds)..."):
                 try:
-                    # Add a note about computation time
                     st.info(
                         "⏱️ Computing SHAP values with 100 samples. This provides a good balance between accuracy and speed.")
 
@@ -1129,7 +1067,6 @@ elif st.session_state.page == 'results':
                     st.error(f"SHAP explanation failed: {e}")
                     st.warning("💡 Tip: SHAP computation can be resource-intensive. The prediction is still valid!")
                     import traceback
-
                     st.error(traceback.format_exc())
 
             st.markdown("</div>", unsafe_allow_html=True)
@@ -1159,13 +1096,10 @@ elif st.session_state.page == 'results':
             """, unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
-        # New prediction button
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            if st.button("🔄 Make Another Prediction", use_container_width=True):
-                switch_to_input()
-                st.rerun()
-
-        st.markdown("</div>", unsafe_allow_html=True)
+        # New prediction button - centered
+        st.markdown("<br><br>", unsafe_allow_html=True)
+        if st.button("🔄 Make Another Prediction"):
+            switch_to_input()
+            st.rerun()
 
     set_background(bg_path)
