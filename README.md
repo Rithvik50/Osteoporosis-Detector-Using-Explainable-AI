@@ -9,7 +9,7 @@ Osteoporosis is the gradual deterioration of bone structure with time. As age in
 
 Osteoporosis, especially for hip bones are classified based off the Singh Index
 
-![Trabecular Patterns by Singh Index](Trabecular_Singh.png "Trabecular Patterns by Singh Index")
+![Trabecular Patterns by Singh Index](README/Trabecular_Singh.png "Trabecular Patterns by Singh Index")
 
 Predicting early osteoporosis is vital. We aim to cover this by developing a screening tool with the help of Machine Learning. 
 
@@ -19,4 +19,4 @@ We aim to utilize dual methodologies for detecting.
 
 •⁠  ⁠ResNet-34 for X-ray classification based off Singh Index.
 
-![Architecture Diagram](Architecture_Diagram.png "Architecture Diagram")
+![Architecture Diagram](README/Architecture_Diagram.png "Architecture Diagram")
