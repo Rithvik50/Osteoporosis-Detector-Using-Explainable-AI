@@ -1,0 +1,28 @@
+/CNN/data/
+
+C:\Users\user\Documents\capstone\CNN\data>dir
+ Volume in drive C has no label.
+ Volume Serial Number is 4AF3-5595
+
+ Directory of C:\Users\user\Documents\capstone\CNN\data
+
+10/23/2025  07:46 AM    <DIR>          .
+10/23/2025  07:46 AM    <DIR>          ..
+10/23/2025  07:41 AM               152 command.txt
+10/23/2025  07:45 AM               746 dir.txt
+10/23/2025  07:47 AM    <DIR>          infer
+10/23/2025  07:40 AM             5,230 inference.py
+10/21/2025  06:40 PM               147 requirements.txt
+10/22/2025  11:53 PM    <DIR>          runs
+09/18/2025  11:25 AM    <DIR>          test
+09/18/2025  11:25 AM    <DIR>          train
+10/21/2025  08:21 PM            13,494 train.py
+09/18/2025  11:25 AM    <DIR>          val
+               5 File(s)         19,769 bytes
+               7 Dir(s)  25,031,385,088 bytes free
+
+C:\Users\user\Documents\capstone\CNN\data>
+
+python inference.py --image_path "infer/n274_jpg.rf.94aad5a9b9ff5b86cbf07c81be44b2d3.jpg" --model_path "runs/train/best.pt"
+
+
