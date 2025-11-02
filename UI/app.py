@@ -30,6 +30,8 @@ CNN_DIR = BASE_DIR/"CNN"/"data"
 UNET_MODEL = os.path.join(UNET_DIR, "checkpoints", "best.pt")
 CNN_MODEL = os.path.join(CNN_DIR, "runs", "train", "best.pt")
 PREDICTIONS_DIR = os.path.join(UNET_DIR, "predictions")
+TEMP_UPLOAD_DIR = os.path.join(UNET_DIR, "temp_uploads")
+os.makedirs(TEMP_UPLOAD_DIR, exist_ok=True)
 bg_path = BASE_DIR/"UI"/"static"/"bg.png"
 
 @st.cache_resource
@@ -370,6 +372,83 @@ def plot_shap_explanation(feature_impacts, predicted_class, top_n=15):
 
 # Load model
 model = load_model()
+
+def patient_prediction(input_df):
+    prediction = model.predict(input_df)[0]
+    probabilities = model.predict_proba(input_df)[0]
+
+    class_map = {0: "Normal", 1: "Osteopenia", 2: "Osteoporosis"}
+    predicted_class = class_map.get(prediction, prediction)
+
+    st.session_state.prediction_data = {
+        'prediction': predicted_class,
+        'probabilities': probabilities,
+        'input_df': input_df,
+        'class_map': class_map
+    }
+
+def xray_prediction(xray_image, temp_filepath):
+    unet_cmd = [
+                "python",
+                os.path.join(UNET_DIR, "infer_crop.py"),
+                "--model_path", UNET_MODEL,
+                "--image_path", temp_filepath,
+                "--save_overlay"
+    ]
+                        
+    result = subprocess.run(unet_cmd, capture_output=True, text=True)
+    
+    if result.returncode != 0:
+        st.error(f"❌ UNET Error: {result.stderr}")
+        st.stop()
+    
+    # Get latest predicted mask
+    mask_files = sorted(
+        Path(PREDICTIONS_DIR).glob("*_predicted_mask.png"),
+        key=os.path.getmtime,
+        reverse=True
+    )
+    
+    if not mask_files:
+        st.error("❌ No cropped image found!")
+        st.stop()
+    
+    cropped_image_path = str(mask_files[0])
+    
+    # Copy to CNN infer folder
+    cnn_infer_dir = os.path.join(CNN_DIR, "infer")
+    os.makedirs(cnn_infer_dir, exist_ok=True)
+    cnn_input_path = os.path.join(cnn_infer_dir, os.path.basename(cropped_image_path))
+    shutil.copy(cropped_image_path, cnn_input_path)
+    
+    cnn_cmd = [
+        "python",
+        os.path.join(CNN_DIR, "inference.py"),
+        "--image_path", cnn_input_path,
+        "--model_path", CNN_MODEL
+    ]
+    
+    result = subprocess.run(cnn_cmd, capture_output=True, text=True)
+    
+    if result.returncode != 0:
+        st.error(f"❌ CNN Error: {result.stderr}")
+        st.stop()
+    
+    # Parse CNN output
+    output_lines = result.stdout.strip().split('\n')
+    prediction_grade = None
+    
+    for line in output_lines:
+        if "Predicted Grade" in line or "Grade" in line:
+            # Extract grade number
+            import re
+            match = re.search(r'Grade\s*[:\-]?\s*(\d)', line)
+            if match:
+                prediction_grade = int(match.group(1))
+                break
+    st.session_state['last_prediction'] = prediction_grade
+    st.session_state['last_cropped_image'] = cropped_image_path
+    st.session_state['last_original_image'] = temp_filepath
 
 features = [
     "age", "sex", "height_cm", "weight_kg", "bmi",
@@ -745,6 +824,10 @@ if st.session_state.page == 'input':
     # Create two-column layout
     col_upload, col_form = st.columns([2.2, 1])
 
+    uploaded_xray = None
+    xray_image = None
+    temp_filepath = None
+
     with col_upload:
         st.markdown("### Upload X-Ray")
         st.markdown("Choose images")
@@ -759,6 +842,19 @@ if st.session_state.page == 'input':
 
             if uploaded_xray is not None:
                 st.session_state['uploaded_xray'] = uploaded_xray
+                xray_image = Image.open(uploaded_xray)
+                st.image(xray_image, caption="Uploaded X-Ray")
+                
+                # Save uploaded file
+                timestamp = int(time.time())
+                temp_filename = f"upload_{timestamp}_{uploaded_xray.name}"
+                temp_filepath = os.path.join(TEMP_UPLOAD_DIR, temp_filename)
+                
+                with open(temp_filepath, "wb") as f:
+                    f.write(uploaded_xray.getbuffer())
+                
+                # Store filepath in session state
+                st.session_state['temp_filepath'] = temp_filepath
                 st.rerun()
         else:
             # Show preview with option to change
@@ -769,6 +865,7 @@ if st.session_state.page == 'input':
                 # Add a button to upload different image
                 if st.button("Upload Different Image", key="change_xray"):
                     st.session_state['uploaded_xray'] = None
+                    st.session_state['temp_filepath'] = None
                     st.rerun()
             except Exception as e:
                 st.error(f"Error loading image: {e}")
@@ -860,7 +957,7 @@ if st.session_state.page == 'input':
                 processed_inputs = inputs.copy()
                 processed_inputs.update({
                     "bmi": (inputs["weight_kg"] / (inputs["height_cm"] ** 2)) * 10000 if inputs[
-                                                                                             "height_cm"] > 0 else np.nan,
+                                                                                                     "height_cm"] > 0 else np.nan,
                     "waist_hip_ratio": (inputs["waist_cm"] / inputs["hip_cm"]) if inputs["hip_cm"] > 0 else np.nan,
                     "years_since_menopause": (
                         inputs["age"] - inputs["menopause_age"]
@@ -897,22 +994,16 @@ if st.session_state.page == 'input':
                 # Make prediction
                 try:
                     with st.spinner("Generating prediction..."):
-                        prediction = model.predict(input_df)[0]
-                        probabilities = model.predict_proba(input_df)[0]
-
-                        class_map = {0: "Normal", 1: "Osteopenia", 2: "Osteoporosis"}
-                        predicted_class = class_map.get(prediction, prediction)
-
-                        st.session_state.prediction_data = {
-                            'prediction': predicted_class,
-                            'probabilities': probabilities,
-                            'input_df': input_df,
-                            'class_map': class_map
-                        }
-
+                        patient_prediction(input_df)
+                        temp_path = st.session_state.get('temp_filepath')
+                        if not temp_path:
+                            st.error("Temporary uploaded file not found. Please re-upload the X-ray and try again.")
+                            st.stop()
+                        xray_prediction(xray_image, temp_path)
+    
                         switch_to_results()
                         st.rerun()
-
+    
                 except Exception as e:
                     st.error(f"Prediction failed: {e}")
                     import traceback
