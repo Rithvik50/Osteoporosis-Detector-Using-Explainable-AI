@@ -10,7 +10,13 @@ import time
 import shutil
 from PIL import Image
 from pathlib import Path
-from ensemble_stacking import StackingEnsembleOptuna, MultiLabelEncoder
+import sys
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+if str(BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(BASE_DIR))
+
+from Ensemble_Stacking.ensemble_stacking import StackingEnsembleOptuna, MultiLabelEncoder
 
 import lime
 import lime.lime_tabular
@@ -19,7 +25,6 @@ import shap
 # Page config
 st.set_page_config(page_title="Osteoporosis Predictor", layout="wide")
 
-BASE_DIR = Path(__file__).resolve().parent.parent
 UNET_DIR = BASE_DIR/"U-Net"
 CNN_DIR = BASE_DIR/"CNN"/"data"
 UNET_MODEL = os.path.join(UNET_DIR, "checkpoints", "best.pt")
