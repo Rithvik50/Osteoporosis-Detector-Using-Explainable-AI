@@ -792,7 +792,7 @@ if st.session_state.page == 'input':
                 inputs["hip_cm"] = st.number_input("Hip (cm)", min_value=50.0, max_value=200.0, value=100.0)
 
             with tab2:
-                st.info("👩 Female patients only – these fields are ignored for males")
+                st.info("👩 Female patients only — these fields are ignored for males")
                 inputs["menopausal_status"] = st.radio("Menopausal Status", ["Pre", "Peri", "Post"], horizontal=True)
                 inputs["menopause_age"] = st.number_input("Menopause Age", min_value=0.0, max_value=70.0, value=0.0)
                 inputs["estrogen_use"] = st.radio("Estrogen Use", ["Yes", "No"], horizontal=True)
@@ -837,9 +837,18 @@ if st.session_state.page == 'input':
                 inputs["ctx_ngml"] = st.number_input("CTX (ng/mL)", min_value=0.0, max_value=2.0, value=0.3)
                 inputs["p1np_ugL"] = st.number_input("P1NP (µg/L)", min_value=0.0, max_value=200.0, value=45.0)
 
-                st.markdown("<br>", unsafe_allow_html=True)
-                submitted = st.form_submit_button("Predict", use_container_width=True)
-                st.markdown("<br>", unsafe_allow_html=True)
+
+            st.markdown("<br>", unsafe_allow_html=True)
+            xray_uploaded = 'uploaded_xray' in st.session_state and st.session_state['uploaded_xray'] is not None
+            if not xray_uploaded:
+                st.warning("⚠️ Please upload an X-ray image to enable prediction")
+
+            submitted = st.form_submit_button(
+                "Predict", 
+                use_container_width=True,
+                disabled=not xray_uploaded
+            )
+            st.markdown("<br>", unsafe_allow_html=True)
 
             if submitted:
                 # Handle male overrides
