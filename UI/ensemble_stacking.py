@@ -30,7 +30,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-df = pd.read_csv("final_dataset.csv")
+df = pd.read_csv(Path(__file__).resolve().parent.parent/"Ensemble_Stacking"/"patient_info_dataset.csv")
 
 """Implementation"""
 
