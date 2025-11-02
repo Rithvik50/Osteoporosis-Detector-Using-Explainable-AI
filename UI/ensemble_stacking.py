@@ -22,6 +22,8 @@ from catboost import CatBoostClassifier
 from sklearn.base import clone
 from sklearn.metrics import accuracy_score, roc_auc_score, f1_score, classification_report, confusion_matrix
 
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 
