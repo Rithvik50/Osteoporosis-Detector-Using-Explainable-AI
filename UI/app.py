@@ -4,6 +4,10 @@ import joblib
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import subprocess
+import os
+import time
+import shutil
 from PIL import Image
 from pathlib import Path
 from ensemble_stacking import StackingEnsembleOptuna, MultiLabelEncoder
@@ -16,18 +20,23 @@ import shap
 st.set_page_config(page_title="Osteoporosis Predictor", layout="wide")
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+UNET_DIR = BASE_DIR/"U-Net"
+CNN_DIR = BASE_DIR/"CNN"/"data"
+UNET_MODEL = os.path.join(UNET_DIR, "checkpoints", "best.pt")
+CNN_MODEL = os.path.join(CNN_DIR, "runs", "train", "best.pt")
+PREDICTIONS_DIR = os.path.join(UNET_DIR, "predictions")
 bg_path = BASE_DIR/"UI"/"static"/"bg.png"
 
 @st.cache_resource
 def load_model():
-    model = joblib.load("stacking_ensemble.joblib")
+    model = joblib.load(BASE_DIR/"Ensemble_Stacking"/"stacking_ensemble.joblib")
     return model
 
 
 @st.cache_resource
 def load_training_data():
     """Load training data for LIME/SHAP explainers"""
-    df = pd.read_csv("final_dataset.csv")
+    df = pd.read_csv(BASE_DIR/"Ensemble_Stacking"/"patient_info_dataset.csv")
 
     X = df.drop('label', axis=1)
 
