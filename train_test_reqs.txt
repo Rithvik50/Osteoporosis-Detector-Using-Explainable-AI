@@ -225,8 +225,8 @@ python-dotenv==1.1.0
 python-json-logger==3.3.0
 python-multipart==0.0.20
 pytz==2025.2
-pywin32==310
-pywinpty==2.0.15
+pywin32==311; platform_system == "Windows"
+pywinpty==3.0.2; platform_system == "Windows"
 PyYAML==6.0.2
 pyzmq==26.4.0
 rank-bm25==0.2.2
