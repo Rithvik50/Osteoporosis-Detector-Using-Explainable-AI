@@ -911,6 +911,9 @@ if st.session_state.page == 'input':
                     .stNumberInput div[data-baseweb="input"] > div > input {
                         color: black !important;
                     }
+                    .stSpinner > div {
+                        color: white !important;
+                    }
                     </style>""", unsafe_allow_html=True)
         with st.form("prediction_form"):
             inputs = {}
@@ -1032,7 +1035,7 @@ if st.session_state.page == 'input':
 
                 # Make prediction
                 try:
-                    with st.spinner(":white[Generating prediction...]"):
+                    with st.spinner("Generating prediction..."):
                         if None not in inputs.values():
                             patient_classification = patient_prediction(input_df)
                         xray_classification = xray_prediction(Image.open(st.session_state['uploaded_xray']), st.session_state['temp_filepath'])
@@ -1113,7 +1116,7 @@ elif st.session_state.page == 'results':
     }
     .prob-item p {margin: 0.5rem 0; color: white;}
     .explanation-section {
-        background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px);
         padding: 2rem; border-radius: 20px;
         border: 1px solid rgba(255, 255, 255, 0.3); margin-bottom: 2rem;
     }
@@ -1133,22 +1136,22 @@ elif st.session_state.page == 'results':
         match singh_index:
                 case 1:
                     xray_result_display = "Severe Osteoporosis"
-                    color = "#dc3545"
+                    color = "#f87171"
                 case 2:
                     xray_result_display = "Moderate Osteoporosis"
-                    color = "#ff851b"
+                    color = "#f87171"
                 case 3:
                     xray_result_display = "Severe Osteopenia"
-                    color = "#ffbf00"
+                    color = "#fbbf24"
                 case 4:
                     xray_result_display = "Moderate Osteopenia"
-                    color = "#f3d068"
+                    color = "#fbbf24"
                 case 5:
                     xray_result_display = "Normal"
-                    color = "#9eff8b"
+                    color = "#4ade80"
                 case 6:
                     xray_result_display = "Normal"
-                    color = "#16ce41"
+                    color = "#4ade80"
 
         if st.session_state.prediction_data is not None:
             pred_data = st.session_state.prediction_data
@@ -1161,9 +1164,9 @@ elif st.session_state.page == 'results':
             # Display prediction
             st.markdown(f"""
                 <div class='final-prediction-box'>
-                    <h2 style='color: rgba(255, 255, 255, 0.7); margin-bottom: 0.5rem; font-size: 1.2rem;'>Final Classification</h2>
+                    <h2 style='color: rgba(0, 0, 0, 0.7); margin-bottom: 0.5rem; font-size: 1.2rem;'>Final Classification</h2>
                     <h1 style='color: black; font-size: 3rem; margin: 1rem 0;'>{final_class}</h1>
-                    <hr style='border: 1px solid rgba(255, 255, 255, 0.2); margin: 1.5rem 0;'>
+                    <hr style='border: 1px solid rgba(0, 0, 0, 0.2); margin: 1.5rem 0;'>
                 </div>
                 """, unsafe_allow_html=True)
             st.markdown(f"""
@@ -1212,7 +1215,7 @@ elif st.session_state.page == 'results':
             # LIME Explanation
             if lime_explainer:
                 st.markdown("<div class='explanation-section'>", unsafe_allow_html=True)
-                st.markdown("<h2>🔍 LIME Explanation</h2>", unsafe_allow_html=True)
+                st.markdown("<h2 style='color: white;'>🔍 LIME Explanation</h2>", unsafe_allow_html=True)
                 st.markdown(
                     "<p style='color: rgba(255, 255, 255, 0.9);'>Shows which features most influenced this specific prediction.</p>",
                     unsafe_allow_html=True)
@@ -1236,7 +1239,7 @@ elif st.session_state.page == 'results':
             # SHAP Explanation
             if shap_explainer:
                 st.markdown("<div class='explanation-section'>", unsafe_allow_html=True)
-                st.markdown("<h2>📊 SHAP Explanation</h2>", unsafe_allow_html=True)
+                st.markdown("<h2 style='color: white;'>📊 SHAP Explanation</h2>", unsafe_allow_html=True)
                 st.markdown(
                     "<p style='color: rgba(255, 255, 255, 0.9);'>Game-theoretic approach to explain individual predictions.</p>",
                     unsafe_allow_html=True)
@@ -1267,20 +1270,26 @@ elif st.session_state.page == 'results':
                 st.markdown("""
                 <div style='color: rgba(255, 255, 255, 0.95);'>
 
-                ### LIME Explanation
-                - **Green bars** = features increasing the predicted class probability
-                - **Red bars** = features decreasing the predicted class probability
-                - **Longer bars** = stronger influence
+                <h3 style='color: white;'>LIME Explanation</h3>
+                <ul>
+                <li><b>Green bars</b> = features increasing the predicted class probability</li>
+                <li><b>Red bars</b> = features decreasing the predicted class probability</li>
+                <li><b>Longer bars</b> = stronger influence</li>
+                </ul>
 
-                ### SHAP Explanation
-                - **Green bars** = features pushing toward the predicted class
-                - **Red bars** = features pushing away from the predicted class
-                - **SHAP values are additive** - they sum to explain the prediction
+                <h3 style='color: white;'>SHAP Explanation</h3>
+                <ul>
+                <li><b>Green bars</b> = features pushing toward the predicted class</li>
+                <li><b>Red bars</b> = features pushing away from the predicted class</li>
+                <li><b>SHAP values are additive</b> — they sum to explain the prediction</li>
+                </ul>
 
-                ### Key Differences
-                - **LIME** approximates the model locally with a simpler model
-                - **SHAP** uses game theory to fairly distribute prediction among features
-                - Both provide complementary insights into model decision-making
+                <h3 style='color: white;'>Key Differences</h3>
+                <ul>
+                <li><b>LIME</b> approximates the model locally with a simpler model</li>
+                <li><b>SHAP</b> uses game theory to fairly distribute prediction among features</li>
+                <li>Both provide complementary insights into model decision-making</li>
+                </ul>
 
                 </div>
                 """, unsafe_allow_html=True)
