@@ -452,6 +452,42 @@ def xray_prediction(xray_image, temp_filepath):
     st.session_state['last_original_image'] = temp_filepath
     return prediction_grade
 
+def decision_logic(xray_grade, patient_pred, w_x=0.7, w_p=0.3):
+    singh_to_sev = {6:0.0, 5:0.0, 4:1.0, 3:1.5, 2:2.0, 1:2.5}
+    label_to_class = {"Normal":0, "Osteopenia":1, "Osteoporosis":2}
+    label_to_sev = {"Normal":0.0, "Osteopenia":1.0, "Osteoporosis":2.0}
+
+    Sx = singh_to_sev[xray_grade]
+    Sp = label_to_sev[patient_pred]
+    score = w_x * Sx + w_p * Sp
+
+    # Base class from weighted fusion
+    if score < 0.5:
+        base = "Normal"
+    elif score < 1.75:
+        base = "Osteopenia"
+    else:
+        base = "Osteoporosis"
+
+    # Convert to numeric for comparison
+    xray_class = 0 if Sx < 0.5 else (1 if Sx < 1.75 else 2)
+    patient_class = label_to_class[patient_pred]
+
+    # Override only if patient is slightly more severe
+    override = False
+    final = base
+    if patient_class == xray_class + 1:
+        final = {0:"Normal", 1:"Osteopenia", 2:"Osteoporosis"}[patient_class]
+        override = True
+
+    return {
+        "final": final,
+        "score": round(score, 2),
+        "override": override,
+        "xray_class": ["Normal", "Osteopenia", "Osteoporosis"][xray_class],
+        "patient_class": ["Normal", "Osteopenia", "Osteoporosis"][patient_class]
+    }
+
 features = [
     "age", "sex", "height_cm", "weight_kg", "bmi",
     "waist_cm", "hip_cm", "waist_hip_ratio",
