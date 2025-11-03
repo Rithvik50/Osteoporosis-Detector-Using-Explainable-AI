@@ -369,6 +369,20 @@ def plot_shap_explanation(feature_impacts, predicted_class, top_n=15):
     plt.tight_layout()
     return fig
 
+def clear_prediction_state():
+    """Clear all prediction-related session state"""
+    keys_to_clear = [
+        'prediction_data',
+        'last_prediction', 
+        'last_cropped_image',
+        'last_original_image',
+        'uploaded_xray',
+        'temp_filepath'
+    ]
+    for key in keys_to_clear:
+        if key in st.session_state:
+            del st.session_state[key]
+
 
 # Load model
 model = load_model()
@@ -540,6 +554,7 @@ def switch_to_results():
 
 def switch_to_input():
     st.session_state.page = 'input'
+    clear_prediction_state()
 
 
 # Common styling
@@ -990,6 +1005,7 @@ if st.session_state.page == 'input':
             st.markdown("<br>", unsafe_allow_html=True)
 
             if submitted:
+                st.session_state.prediction_data = None
                 # Handle male overrides
                 if inputs["sex"] == "Male":
                     inputs["menopause_age"] = 0
@@ -1297,7 +1313,7 @@ elif st.session_state.page == 'results':
         else:
             st.markdown(f"""
                 <div class='prediction-box'>
-                    <h2 style='color: rgba(255, 255, 255, 0.7); margin-bottom: 0.5rem; font-size: 1.2rem;'>X-Ray Classification</h2>
+                    <h2 style='color: rgba(255, 255, 255, 0.7); margin-bottom: 0.5rem; font-size: 1.2rem;'>Final Classification</h2>
                     <h1 style='color: white; font-size: 3rem; margin: 1rem 0;'>{xray_result_display}</h1>
                     <h1 style='color: {color}; font-size: 3rem; margin: 1rem 0;'>Singh Index Grade: {singh_index}</h1>
                     <hr style='border: 1px solid rgba(255, 255, 255, 0.2); margin: 1.5rem 0;'>
