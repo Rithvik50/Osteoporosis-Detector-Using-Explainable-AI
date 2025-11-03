@@ -870,7 +870,12 @@ if st.session_state.page == 'input':
                 st.session_state['uploaded_xray'] = None
 
     with col_form:
-        st.markdown('<div class="form-header-text"><h1>OSTEOPOROSIS DETECTOR</h1></div>', unsafe_allow_html=True)
+        st.markdown("""<div class="form-header-text"><h1>OSTEOPOROSIS DETECTOR</h1></div>
+                    <style>
+                    .stNumberInput div[data-baseweb="input"] > div > input {
+                        color: black !important;
+                    }
+                    </style>""", unsafe_allow_html=True)
         with st.form("prediction_form"):
             inputs = {}
 
@@ -879,7 +884,7 @@ if st.session_state.page == 'input':
             ])
 
             with tab1:
-                inputs["age"] = st.number_input("Age", min_value=18, max_value=120, value=50, placeholder="Enter age (18-120)")
+                inputs["age"] = st.number_input("Age", min_value=18, max_value=120, value=None, placeholder="Enter age (18-120)")
                 inputs["sex"] = st.radio("Sex", ["Female", "Male"], horizontal=True)
                 inputs["height_cm"] = st.number_input("Height (cm)", min_value=100.0, max_value=250.0, value=160.0, placeholder="Enter height in cm")
                 inputs["weight_kg"] = st.number_input("Weight (kg)", min_value=30.0, max_value=200.0, value=70.0, placeholder="Enter weight in kg")
@@ -992,7 +997,7 @@ if st.session_state.page == 'input':
                 # Make prediction
                 try:
                     with st.spinner("Generating prediction..."):
-                        if inputs is not None:
+                        if None not in inputs.values():
                             patient_classification = patient_prediction(input_df)
                         xray_classification = xray_prediction(Image.open(st.session_state['uploaded_xray']), st.session_state['temp_filepath'])
     
@@ -1084,126 +1089,134 @@ elif st.session_state.page == 'results':
             switch_to_input()
             st.rerun()
 
-    if st.session_state.prediction_data is None:
-        st.error("No prediction data available. Please go back and submit the form.")
-    else:
-        pred_data = st.session_state.prediction_data
-        predicted_class = pred_data['prediction']
-        probabilities = pred_data['probabilities']
-        input_df = pred_data['input_df']
-
-        # Display prediction
+    if st.session_state['last_prediction'] is not None:
+        # Here add visuals to display image classification results and explanations
+        xray_prediction = st.session_state['last_prediction']
         st.markdown(f"""
-        <div class='prediction-box'>
-            <h2 style='color: rgba(255, 255, 255, 0.7); margin-bottom: 0.5rem; font-size: 1.2rem;'>Predicted Diagnosis</h2>
-            <h1 style='color: white; font-size: 3rem; margin: 1rem 0;'>{predicted_class}</h1>
-            <hr style='border: 1px solid rgba(255, 255, 255, 0.2); margin: 1.5rem 0;'>
-            <h3 style='color: rgba(255, 255, 255, 0.8); margin-bottom: 1rem;'>Prediction Probabilities</h3>
-            <div class='prob-container'>
-                <div class='prob-item'>
-                    <p style='color: #4ade80; font-size: 2rem; font-weight: bold;'>{probabilities[0]:.1%}</p>
-                    <p style='color: rgba(255, 255, 255, 0.9); font-weight: 600;'>Normal</p>
-                </div>
-                <div class='prob-item'>
-                    <p style='color: #fbbf24; font-size: 2rem; font-weight: bold;'>{probabilities[1]:.1%}</p>
-                    <p style='color: rgba(255, 255, 255, 0.9); font-weight: 600;'>Osteopenia</p>
-                </div>
-                <div class='prob-item'>
-                    <p style='color: #f87171; font-size: 2rem; font-weight: bold;'>{probabilities[2]:.1%}</p>
-                    <p style='color: rgba(255, 255, 255, 0.9); font-weight: 600;'>Osteoporosis</p>
-                </div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # Load training data and create explainers
-        try:
-            X_train = load_training_data()
-            lime_explainer, lime_encoders = create_lime_explainer(model, X_train)
-            shap_explainer, feature_names, shap_encoders = create_shap_explainer(model, X_train)
-        except Exception as e:
-            st.error(f"Failed to initialize explainers: {e}")
-            import traceback
-            st.error(traceback.format_exc())
-            lime_explainer = None
-            shap_explainer = None
-
-        # LIME Explanation
-        if lime_explainer:
-            st.markdown("<div class='explanation-section'>", unsafe_allow_html=True)
-            st.markdown("<h2>🔍 LIME Explanation</h2>", unsafe_allow_html=True)
-            st.markdown(
-                "<p style='color: rgba(255, 255, 255, 0.9);'>Shows which features most influenced this specific prediction.</p>",
-                unsafe_allow_html=True)
-
-            with st.spinner("Generating LIME explanation..."):
-                try:
-                    instance = input_df.iloc[0]
-                    features_lime, weights, _ = explain_with_lime(
-                        model, instance, lime_explainer, lime_encoders, num_features=10
-                    )
-                    fig = plot_lime_explanation(features_lime, weights, predicted_class, probabilities)
-                    st.pyplot(fig, transparent=True)
-                    plt.close()
-                except Exception as e:
-                    st.error(f"LIME explanation failed: {e}")
-                    import traceback
-                    st.error(traceback.format_exc())
-
-            st.markdown("</div>", unsafe_allow_html=True)
-
-        # SHAP Explanation
-        if shap_explainer:
-            st.markdown("<div class='explanation-section'>", unsafe_allow_html=True)
-            st.markdown("<h2>📊 SHAP Explanation</h2>", unsafe_allow_html=True)
-            st.markdown(
-                "<p style='color: rgba(255, 255, 255, 0.9);'>Game-theoretic approach to explain individual predictions.</p>",
-                unsafe_allow_html=True)
-
-            with st.spinner("Generating SHAP explanation (this may take 30-60 seconds)..."):
-                try:
-                    st.info(
-                        "⏱️ Computing SHAP values with 100 samples. This provides a good balance between accuracy and speed.")
-
-                    instance = input_df.iloc[0]
-                    feature_impacts = explain_with_shap(
-                        model, instance, shap_explainer, feature_names, shap_encoders
-                    )
-                    fig = plot_shap_explanation(feature_impacts, predicted_class, top_n=15)
-                    st.pyplot(fig, transparent=True)
-                    plt.close()
-                except Exception as e:
-                    st.error(f"SHAP explanation failed: {e}")
-                    st.warning("💡 Tip: SHAP computation can be resource-intensive. The prediction is still valid!")
-                    import traceback
-                    st.error(traceback.format_exc())
-
-            st.markdown("</div>", unsafe_allow_html=True)
-
-        # Interpretation guide
-        st.markdown("<div class='explanation-section'>", unsafe_allow_html=True)
-        with st.expander("📖 How to Interpret These Visualizations", expanded=False):
-            st.markdown("""
-            <div style='color: rgba(255, 255, 255, 0.95);'>
-
-            ### LIME Explanation
-            - **Green bars** = features increasing the predicted class probability
-            - **Red bars** = features decreasing the predicted class probability
-            - **Longer bars** = stronger influence
-
-            ### SHAP Explanation
-            - **Green bars** = features pushing toward the predicted class
-            - **Red bars** = features pushing away from the predicted class
-            - **SHAP values are additive** - they sum to explain the prediction
-
-            ### Key Differences
-            - **LIME** approximates the model locally with a simpler model
-            - **SHAP** uses game theory to fairly distribute prediction among features
-            - Both provide complementary insights into model decision-making
-
+            <div class='prediction-box'>
+                <h2 style='color: rgba(255, 255, 255, 0.7); margin-bottom: 0.5rem; font-size: 1.2rem;'>X-Ray Classification</h2>
+                <h1 style='color: white; font-size: 3rem; margin: 1rem 0;'>{xray_prediction}</h1>
+                <hr style='border: 1px solid rgba(255, 255, 255, 0.2); margin: 1.5rem 0;'>
             </div>
             """, unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
+        if st.session_state.prediction_data is not None:
+            pred_data = st.session_state.prediction_data
+            predicted_class = pred_data['prediction']
+            probabilities = pred_data['probabilities']
+            input_df = pred_data['input_df']
+
+            # Display prediction
+            st.markdown(f"""
+            <div class='prediction-box'>
+                <h2 style='color: rgba(255, 255, 255, 0.7); margin-bottom: 0.5rem; font-size: 1.2rem;'>Patient Info Classification</h2>
+                <h1 style='color: white; font-size: 3rem; margin: 1rem 0;'>{predicted_class}</h1>
+                <hr style='border: 1px solid rgba(255, 255, 255, 0.2); margin: 1.5rem 0;'>
+                <h3 style='color: rgba(255, 255, 255, 0.8); margin-bottom: 1rem;'>Prediction Probabilities</h3>
+                <div class='prob-container'>
+                    <div class='prob-item'>
+                        <p style='color: #4ade80; font-size: 2rem; font-weight: bold;'>{probabilities[0]:.1%}</p>
+                        <p style='color: rgba(255, 255, 255, 0.9); font-weight: 600;'>Normal</p>
+                    </div>
+                    <div class='prob-item'>
+                        <p style='color: #fbbf24; font-size: 2rem; font-weight: bold;'>{probabilities[1]:.1%}</p>
+                        <p style='color: rgba(255, 255, 255, 0.9); font-weight: 600;'>Osteopenia</p>
+                    </div>
+                    <div class='prob-item'>
+                        <p style='color: #f87171; font-size: 2rem; font-weight: bold;'>{probabilities[2]:.1%}</p>
+                        <p style='color: rgba(255, 255, 255, 0.9); font-weight: 600;'>Osteoporosis</p>
+                    </div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            # Load training data and create explainers
+            try:
+                X_train = load_training_data()
+                lime_explainer, lime_encoders = create_lime_explainer(model, X_train)
+                shap_explainer, feature_names, shap_encoders = create_shap_explainer(model, X_train)
+            except Exception as e:
+                st.error(f"Failed to initialize explainers: {e}")
+                import traceback
+                st.error(traceback.format_exc())
+                lime_explainer = None
+                shap_explainer = None
+
+            # LIME Explanation
+            if lime_explainer:
+                st.markdown("<div class='explanation-section'>", unsafe_allow_html=True)
+                st.markdown("<h2>🔍 LIME Explanation</h2>", unsafe_allow_html=True)
+                st.markdown(
+                    "<p style='color: rgba(255, 255, 255, 0.9);'>Shows which features most influenced this specific prediction.</p>",
+                    unsafe_allow_html=True)
+
+                with st.spinner("Generating LIME explanation..."):
+                    try:
+                        instance = input_df.iloc[0]
+                        features_lime, weights, _ = explain_with_lime(
+                            model, instance, lime_explainer, lime_encoders, num_features=10
+                        )
+                        fig = plot_lime_explanation(features_lime, weights, predicted_class, probabilities)
+                        st.pyplot(fig, transparent=True)
+                        plt.close()
+                    except Exception as e:
+                        st.error(f"LIME explanation failed: {e}")
+                        import traceback
+                        st.error(traceback.format_exc())
+
+                st.markdown("</div>", unsafe_allow_html=True)
+
+            # SHAP Explanation
+            if shap_explainer:
+                st.markdown("<div class='explanation-section'>", unsafe_allow_html=True)
+                st.markdown("<h2>📊 SHAP Explanation</h2>", unsafe_allow_html=True)
+                st.markdown(
+                    "<p style='color: rgba(255, 255, 255, 0.9);'>Game-theoretic approach to explain individual predictions.</p>",
+                    unsafe_allow_html=True)
+
+                with st.spinner("Generating SHAP explanation (this may take 30-60 seconds)..."):
+                    try:
+                        st.info(
+                            "⏱️ Computing SHAP values with 100 samples. This provides a good balance between accuracy and speed.")
+
+                        instance = input_df.iloc[0]
+                        feature_impacts = explain_with_shap(
+                            model, instance, shap_explainer, feature_names, shap_encoders
+                        )
+                        fig = plot_shap_explanation(feature_impacts, predicted_class, top_n=15)
+                        st.pyplot(fig, transparent=True)
+                        plt.close()
+                    except Exception as e:
+                        st.error(f"SHAP explanation failed: {e}")
+                        st.warning("💡 Tip: SHAP computation can be resource-intensive. The prediction is still valid!")
+                        import traceback
+                        st.error(traceback.format_exc())
+
+                st.markdown("</div>", unsafe_allow_html=True)
+
+            # Interpretation guide
+            st.markdown("<div class='explanation-section'>", unsafe_allow_html=True)
+            with st.expander("📖 How to Interpret These Visualizations", expanded=False):
+                st.markdown("""
+                <div style='color: rgba(255, 255, 255, 0.95);'>
+
+                ### LIME Explanation
+                - **Green bars** = features increasing the predicted class probability
+                - **Red bars** = features decreasing the predicted class probability
+                - **Longer bars** = stronger influence
+
+                ### SHAP Explanation
+                - **Green bars** = features pushing toward the predicted class
+                - **Red bars** = features pushing away from the predicted class
+                - **SHAP values are additive** - they sum to explain the prediction
+
+                ### Key Differences
+                - **LIME** approximates the model locally with a simpler model
+                - **SHAP** uses game theory to fairly distribute prediction among features
+                - Both provide complementary insights into model decision-making
+
+                </div>
+                """, unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
 
         # New prediction button - centered
         st.markdown("<br><br>", unsafe_allow_html=True)
