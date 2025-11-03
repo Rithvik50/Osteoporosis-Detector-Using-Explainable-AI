@@ -1304,7 +1304,6 @@ elif st.session_state.page == 'results':
                 </div>
                 """, unsafe_allow_html=True)
 
-        # New prediction button - centered
         st.markdown("<br><br>", unsafe_allow_html=True)
         if st.button("🔄 Make Another Prediction"):
             switch_to_input()
