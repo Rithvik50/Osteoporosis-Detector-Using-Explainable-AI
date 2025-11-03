@@ -879,17 +879,17 @@ if st.session_state.page == 'input':
             ])
 
             with tab1:
-                inputs["age"] = st.number_input("Age", min_value=18, max_value=120, value=50)
+                inputs["age"] = st.number_input("Age", min_value=18, max_value=120, value=50, placeholder="Enter age (18-120)")
                 inputs["sex"] = st.radio("Sex", ["Female", "Male"], horizontal=True)
-                inputs["height_cm"] = st.number_input("Height (cm)", min_value=100.0, max_value=250.0, value=160.0)
-                inputs["weight_kg"] = st.number_input("Weight (kg)", min_value=30.0, max_value=200.0, value=70.0)
-                inputs["waist_cm"] = st.number_input("Waist (cm)", min_value=50.0, max_value=200.0, value=85.0)
-                inputs["hip_cm"] = st.number_input("Hip (cm)", min_value=50.0, max_value=200.0, value=100.0)
+                inputs["height_cm"] = st.number_input("Height (cm)", min_value=100.0, max_value=250.0, value=160.0, placeholder="Enter height in cm")
+                inputs["weight_kg"] = st.number_input("Weight (kg)", min_value=30.0, max_value=200.0, value=70.0, placeholder="Enter weight in kg")
+                inputs["waist_cm"] = st.number_input("Waist (cm)", min_value=50.0, max_value=200.0, value=85.0, placeholder="Enter waist circumference")
+                inputs["hip_cm"] = st.number_input("Hip (cm)", min_value=50.0, max_value=200.0, value=100.0, placeholder="Enter hip circumference")
 
             with tab2:
                 st.info("👩 Female patients only — these fields are ignored for males")
                 inputs["menopausal_status"] = st.radio("Menopausal Status", ["Pre", "Peri", "Post"], horizontal=True)
-                inputs["menopause_age"] = st.number_input("Menopause Age", min_value=0.0, max_value=70.0, value=0.0)
+                inputs["menopause_age"] = st.number_input("Menopause Age", min_value=0.0, max_value=70.0, value=0.0, placeholder="Enter menopause age (if applicable)")
                 inputs["estrogen_use"] = st.radio("Estrogen Use", ["Yes", "No"], horizontal=True)
 
             with tab3:
@@ -920,17 +920,17 @@ if st.session_state.page == 'input':
                 inputs["vitamin_d_supplement"] = st.radio("Vitamin D Supplement?", ["Yes", "No"], horizontal=True, index=1)
 
             with tab5:
-                inputs["vitamin_d_ngml"] = st.number_input("Vitamin D (ng/mL)", min_value=0.0, max_value=150.0, value=25.0)
+                inputs["vitamin_d_ngml"] = st.number_input("Vitamin D (ng/mL)", min_value=0.0, max_value=150.0, value=25.0, placeholder="Enter vitamin D level")
                 inputs["serum_calcium_mgdl"] = st.number_input("Serum Calcium (mg/dL)", min_value=0.0, max_value=20.0,
-                                                               value=9.5)
+                                                               value=9.5, placeholder="Enter calcium level")
                 inputs["alkaline_phosphatase"] = st.number_input("Alkaline Phosphatase", min_value=0.0, max_value=500.0,
-                                                                 value=75.0)
-                inputs["pth_pgml"] = st.number_input("PTH (pg/mL)", min_value=0.0, max_value=200.0, value=40.0)
-                inputs["creatinine_mgdl"] = st.number_input("Creatinine (mg/dL)", min_value=0.0, max_value=10.0, value=1.0)
-                inputs["hdl_mgdl"] = st.number_input("HDL (mg/dL)", min_value=0.0, max_value=200.0, value=60.0)
-                inputs["ldl_mgdl"] = st.number_input("LDL (mg/dL)", min_value=0.0, max_value=500.0, value=120.0)
-                inputs["ctx_ngml"] = st.number_input("CTX (ng/mL)", min_value=0.0, max_value=2.0, value=0.3)
-                inputs["p1np_ugL"] = st.number_input("P1NP (µg/L)", min_value=0.0, max_value=200.0, value=45.0)
+                                                                 value=75.0, placeholder="Enter ALP level")
+                inputs["pth_pgml"] = st.number_input("PTH (pg/mL)", min_value=0.0, max_value=200.0, value=40.0, placeholder="Enter PTH level")
+                inputs["creatinine_mgdl"] = st.number_input("Creatinine (mg/dL)", min_value=0.0, max_value=10.0, value=1.0, placeholder="Enter creatinine level")
+                inputs["hdl_mgdl"] = st.number_input("HDL (mg/dL)", min_value=0.0, max_value=200.0, value=60.0, placeholder="Enter HDL cholesterol")
+                inputs["ldl_mgdl"] = st.number_input("LDL (mg/dL)", min_value=0.0, max_value=500.0, value=120.0, placeholder="Enter LDL cholesterol")
+                inputs["ctx_ngml"] = st.number_input("CTX (ng/mL)", min_value=0.0, max_value=2.0, value=0.3, placeholder="Enter CTX level")
+                inputs["p1np_ugL"] = st.number_input("P1NP (µg/L)", min_value=0.0, max_value=200.0, value=45.0, placeholder="Enter P1NP level")
 
 
             st.markdown("<br>", unsafe_allow_html=True)
@@ -992,8 +992,9 @@ if st.session_state.page == 'input':
                 # Make prediction
                 try:
                     with st.spinner("Generating prediction..."):
-                        patient_classificaation = patient_prediction(input_df)
-                        xray_classificaation = xray_prediction(Image.open(st.session_state['uploaded_xray']), st.session_state['temp_filepath'])
+                        if inputs is not None:
+                            patient_classification = patient_prediction(input_df)
+                        xray_classification = xray_prediction(Image.open(st.session_state['uploaded_xray']), st.session_state['temp_filepath'])
     
                         switch_to_results()
                         st.rerun()
