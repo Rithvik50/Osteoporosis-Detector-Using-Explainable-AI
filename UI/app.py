@@ -1032,7 +1032,7 @@ if st.session_state.page == 'input':
 
                 # Make prediction
                 try:
-                    with st.spinner("Generating prediction..."):
+                    with st.spinner(":white[Generating prediction...]"):
                         if None not in inputs.values():
                             patient_classification = patient_prediction(input_df)
                         xray_classification = xray_prediction(Image.open(st.session_state['uploaded_xray']), st.session_state['temp_filepath'])
@@ -1058,7 +1058,6 @@ elif st.session_state.page == 'results':
         display: none !important;
     }
     
-    /* Style for Make Another Prediction button - match Predict button */
     .stButton > button {
         background: rgba(255, 255, 255, 0.1) !important;
         backdrop-filter: blur(10px) !important;
@@ -1085,16 +1084,20 @@ elif st.session_state.page == 'results':
         box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25) !important;
     }
     
-    /* Center button container */
     .stButton {
         display: flex !important;
         justify-content: center !important;
         width: 100% !important;
     }
-    
-    /* Remove the blurry container box */
+
     .prediction-box {
         background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px);
+        padding: 2rem; border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        text-align: center; margin-bottom: 2rem;
+    }
+    .final-prediction-box {
+        background: rgba(212, 237, 218); backdrop-filter: blur(10px);
         padding: 2rem; border-radius: 20px;
         border: 1px solid rgba(255, 255, 255, 0.3);
         text-align: center; margin-bottom: 2rem;
@@ -1146,7 +1149,7 @@ elif st.session_state.page == 'results':
                 case 6:
                     xray_result_display = "Normal"
                     color = "#16ce41"
-                    
+
         if st.session_state.prediction_data is not None:
             pred_data = st.session_state.prediction_data
             patient_class = pred_data['prediction']
@@ -1157,9 +1160,9 @@ elif st.session_state.page == 'results':
 
             # Display prediction
             st.markdown(f"""
-                <div class='prediction-box'>
+                <div class='final-prediction-box'>
                     <h2 style='color: rgba(255, 255, 255, 0.7); margin-bottom: 0.5rem; font-size: 1.2rem;'>Final Classification</h2>
-                    <h1 style='color: white; font-size: 3rem; margin: 1rem 0;'>{final_class}</h1>
+                    <h1 style='color: black; font-size: 3rem; margin: 1rem 0;'>{final_class}</h1>
                     <hr style='border: 1px solid rgba(255, 255, 255, 0.2); margin: 1.5rem 0;'>
                 </div>
                 """, unsafe_allow_html=True)
