@@ -587,11 +587,11 @@ if st.session_state.page == 'input':
     st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Forum&family=Jersey+10&family=Lexend+Giga:wght@100..900&family=Micro+5&display=swap');
-    
+
     /* Hide default streamlit elements */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
-    
+
     /* ============================================ */
     /* UPLOAD AREA CONTAINER - FIXED POSITIONING */
     /* ============================================ */
@@ -617,7 +617,7 @@ if st.session_state.page == 'input':
         display: flex !important;
         flex-direction: column !important;
     }
-    
+
     /* Title styling */
     div[data-testid="column"]:first-child h3 {
         color: white !important;
@@ -746,7 +746,7 @@ if st.session_state.page == 'input':
     div[data-testid="column"]:first-child [data-testid="stImage"] figcaption {
         display: none !important;
     }
-    
+
     /* Change image button styling */
     div[data-testid="column"]:first-child button[key="change_xray"],
     div[data-testid="column"]:first-child button[kind="secondary"],
@@ -776,7 +776,7 @@ if st.session_state.page == 'input':
         transition: all 0.3s ease !important;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
     }
-    
+
     div[data-testid="column"]:first-child button[key="change_xray"]:hover,
     div[data-testid="column"]:first-child button[kind="secondary"]:hover,
     div[data-testid="column"]:first-child button[kind="primary"]:hover,
@@ -785,7 +785,7 @@ if st.session_state.page == 'input':
         transform: translateY(-2px) !important;
         box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25) !important;
     }
-    
+
     div[data-testid="column"]:first-child button p,
     div[data-testid="column"]:first-child button span,
     div[data-testid="column"]:first-child button div {
@@ -801,7 +801,7 @@ if st.session_state.page == 'input':
     /* ============================================ */
     /* FORM HEADER AND POSITIONING */
     /* ============================================ */
-    
+
     .form-header-text {
         position: fixed !important;
         right: 5vw !important;
@@ -809,7 +809,7 @@ if st.session_state.page == 'input':
         z-index: 3 !important;
         width: auto !important;
     }
-    
+
     .form-header-text h1 {
         color: white !important;
         font-family: 'Lexend Giga', sans-serif !important;
@@ -821,7 +821,7 @@ if st.session_state.page == 'input':
         text-orientation: mixed !important;
         white-space: nowrap !important;
     }
-    
+
     /* Form container positioning */
     div[data-testid="column"]:last-child [data-testid="stForm"] {
         position: fixed !important;
@@ -865,7 +865,7 @@ if st.session_state.page == 'input':
         color: white !important; 
         font-size: 14px;
     }
-    
+
     /* Ensure all text elements are horizontal */
     * {
         writing-mode: horizontal-tb !important;
