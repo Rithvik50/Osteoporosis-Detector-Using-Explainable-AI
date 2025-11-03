@@ -1134,9 +1134,16 @@ elif st.session_state.page == 'results':
             probabilities = pred_data['probabilities']
             input_df = pred_data['input_df']
 
-            final_class = decision_logic(singh_index, patient_class)
+            final_class = decision_logic(singh_index, patient_class)['final']
 
             # Display prediction
+            st.markdown(f"""
+                <div class='prediction-box'>
+                    <h2 style='color: rgba(255, 255, 255, 0.7); margin-bottom: 0.5rem; font-size: 1.2rem;'>Final Classification</h2>
+                    <h1 style='color: white; font-size: 3rem; margin: 1rem 0;'>{final_class}</h1>
+                    <hr style='border: 1px solid rgba(255, 255, 255, 0.2); margin: 1.5rem 0;'>
+                </div>
+                """, unsafe_allow_html=True)
             st.markdown(f"""
             <div class='prediction-box'>
                 <h2 style='color: rgba(255, 255, 255, 0.7); margin-bottom: 0.5rem; font-size: 1.2rem;'>Patient Info Classification</h2>
