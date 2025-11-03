@@ -1090,15 +1090,8 @@ elif st.session_state.page == 'results':
             st.rerun()
 
     if st.session_state['last_prediction'] is not None:
-        # Here add visuals to display image classification results and explanations
-        xray_prediction = st.session_state['last_prediction']
-        st.markdown(f"""
-            <div class='prediction-box'>
-                <h2 style='color: rgba(255, 255, 255, 0.7); margin-bottom: 0.5rem; font-size: 1.2rem;'>X-Ray Classification</h2>
-                <h1 style='color: white; font-size: 3rem; margin: 1rem 0;'>{xray_prediction}</h1>
-                <hr style='border: 1px solid rgba(255, 255, 255, 0.2); margin: 1.5rem 0;'>
-            </div>
-            """, unsafe_allow_html=True)
+        singh_index = st.session_state['last_prediction']
+        
         if st.session_state.prediction_data is not None:
             pred_data = st.session_state.prediction_data
             predicted_class = pred_data['prediction']
@@ -1217,6 +1210,27 @@ elif st.session_state.page == 'results':
                 </div>
                 """, unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
+        else:
+            match singh_index:
+                case 1:
+                    xray_result_display = "Severe Osteoporosis"
+                case 2:
+                    xray_result_display = "Moderate Osteoporosis"
+                case 3:
+                    xray_result_display = "Severe Osteopenia"
+                case 4:
+                    xray_result_display = "Moderate Osteopenia"
+                case 5:
+                    xray_result_display = "Normal"
+                case 6:
+                    xray_result_display = "Normal"
+            st.markdown(f"""
+                <div class='prediction-box'>
+                    <h2 style='color: rgba(255, 255, 255, 0.7); margin-bottom: 0.5rem; font-size: 1.2rem;'>X-Ray Classification</h2>
+                    <h1 style='color: white; font-size: 3rem; margin: 1rem 0;'>{xray_result_display}</h1>
+                    <hr style='border: 1px solid rgba(255, 255, 255, 0.2); margin: 1.5rem 0;'>
+                </div>
+                """, unsafe_allow_html=True)
 
         # New prediction button - centered
         st.markdown("<br><br>", unsafe_allow_html=True)
