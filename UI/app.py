@@ -1130,15 +1130,17 @@ elif st.session_state.page == 'results':
         
         if st.session_state.prediction_data is not None:
             pred_data = st.session_state.prediction_data
-            predicted_class = pred_data['prediction']
+            patient_class = pred_data['prediction']
             probabilities = pred_data['probabilities']
             input_df = pred_data['input_df']
+
+            final_class = decision_logic(singh_index, patient_class)
 
             # Display prediction
             st.markdown(f"""
             <div class='prediction-box'>
                 <h2 style='color: rgba(255, 255, 255, 0.7); margin-bottom: 0.5rem; font-size: 1.2rem;'>Patient Info Classification</h2>
-                <h1 style='color: white; font-size: 3rem; margin: 1rem 0;'>{predicted_class}</h1>
+                <h1 style='color: white; font-size: 3rem; margin: 1rem 0;'>{patient_class}</h1>
                 <hr style='border: 1px solid rgba(255, 255, 255, 0.2); margin: 1.5rem 0;'>
                 <h3 style='color: rgba(255, 255, 255, 0.8); margin-bottom: 1rem;'>Prediction Probabilities</h3>
                 <div class='prob-container'>
@@ -1184,7 +1186,7 @@ elif st.session_state.page == 'results':
                         features_lime, weights, _ = explain_with_lime(
                             model, instance, lime_explainer, lime_encoders, num_features=10
                         )
-                        fig = plot_lime_explanation(features_lime, weights, predicted_class, probabilities)
+                        fig = plot_lime_explanation(features_lime, weights, patient_class, probabilities)
                         st.pyplot(fig, transparent=True)
                         plt.close()
                     except Exception as e:
@@ -1211,7 +1213,7 @@ elif st.session_state.page == 'results':
                         feature_impacts = explain_with_shap(
                             model, instance, shap_explainer, feature_names, shap_encoders
                         )
-                        fig = plot_shap_explanation(feature_impacts, predicted_class, top_n=15)
+                        fig = plot_shap_explanation(feature_impacts, patient_class, top_n=15)
                         st.pyplot(fig, transparent=True)
                         plt.close()
                     except Exception as e:
