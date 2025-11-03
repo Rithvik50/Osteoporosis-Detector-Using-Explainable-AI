@@ -386,6 +386,7 @@ def patient_prediction(input_df):
         'input_df': input_df,
         'class_map': class_map
     }
+    return predicted_class
 
 def xray_prediction(xray_image, temp_filepath):
     unet_cmd = [
@@ -396,7 +397,7 @@ def xray_prediction(xray_image, temp_filepath):
                 "--save_overlay"
     ]
                         
-    result = subprocess.run(unet_cmd, capture_output=True, text=True)
+    result = subprocess.run(unet_cmd, capture_output=True, text=True, cwd=str(UNET_DIR))
     
     if result.returncode != 0:
         st.error(f"❌ UNET Error: {result.stderr}")
@@ -428,7 +429,7 @@ def xray_prediction(xray_image, temp_filepath):
         "--model_path", CNN_MODEL
     ]
     
-    result = subprocess.run(cnn_cmd, capture_output=True, text=True)
+    result = subprocess.run(cnn_cmd, capture_output=True, text=True, cwd=str(CNN_DIR))
     
     if result.returncode != 0:
         st.error(f"❌ CNN Error: {result.stderr}")
@@ -449,6 +450,7 @@ def xray_prediction(xray_image, temp_filepath):
     st.session_state['last_prediction'] = prediction_grade
     st.session_state['last_cropped_image'] = cropped_image_path
     st.session_state['last_original_image'] = temp_filepath
+    return prediction_grade
 
 features = [
     "age", "sex", "height_cm", "weight_kg", "bmi",
@@ -824,10 +826,6 @@ if st.session_state.page == 'input':
     # Create two-column layout
     col_upload, col_form = st.columns([2.2, 1])
 
-    uploaded_xray = None
-    xray_image = None
-    temp_filepath = None
-
     with col_upload:
         st.markdown("### Upload X-Ray")
         st.markdown("Choose images")
@@ -994,12 +992,8 @@ if st.session_state.page == 'input':
                 # Make prediction
                 try:
                     with st.spinner("Generating prediction..."):
-                        patient_prediction(input_df)
-                        temp_path = st.session_state.get('temp_filepath')
-                        if not temp_path:
-                            st.error("Temporary uploaded file not found. Please re-upload the X-ray and try again.")
-                            st.stop()
-                        xray_prediction(xray_image, temp_path)
+                        patient_classificaation = patient_prediction(input_df)
+                        xray_classificaation = xray_prediction(Image.open(st.session_state['uploaded_xray']), st.session_state['temp_filepath'])
     
                         switch_to_results()
                         st.rerun()
