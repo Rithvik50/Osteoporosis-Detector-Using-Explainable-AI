@@ -27,6 +27,7 @@ st.set_page_config(page_title="Osteoporosis Predictor", layout="wide")
 
 UNET_DIR = BASE_DIR/"U-Net"
 CNN_DIR = BASE_DIR/"CNN"/"data"
+PIPELINE_DIR = os.path.join(BASE_DIR, "pipeline.py")
 UNET_MODEL = os.path.join(UNET_DIR, "checkpoints", "best.pt")
 CNN_MODEL = os.path.join(CNN_DIR, "runs", "train", "best.pt")
 PREDICTIONS_DIR = os.path.join(UNET_DIR, "predictions")
@@ -403,67 +404,48 @@ def patient_prediction(input_df):
     return predicted_class
 
 def xray_prediction(xray_image, temp_filepath):
-    unet_cmd = [
-                "python",
-                os.path.join(UNET_DIR, "infer_crop.py"),
-                "--model_path", UNET_MODEL,
-                "--image_path", temp_filepath,
-                "--save_overlay"
-    ]
-                        
-    result = subprocess.run(unet_cmd, capture_output=True, text=True, cwd=str(UNET_DIR))
-    
+    cmd = [sys.executable, PIPELINE_DIR, temp_filepath]
+
+    # Run without shell for cross-platform safety
+    result = subprocess.run(cmd, capture_output=True, text=True, shell=False, cwd=str(UNET_DIR))
+
     if result.returncode != 0:
-        st.error(f"❌ UNET Error: {result.stderr}")
+        st.error("❌ Pipeline failed.")
+        st.text("Stdout:")
+        st.text(result.stdout)
+        st.text("Stderr:")
+        st.text(result.stderr)
         st.stop()
-    
-    # Get latest predicted mask
-    mask_files = sorted(
-        Path(PREDICTIONS_DIR).glob("*_predicted_mask.png"),
-        key=os.path.getmtime,
-        reverse=True
-    )
-    
-    if not mask_files:
-        st.error("❌ No cropped image found!")
-        st.stop()
-    
-    cropped_image_path = str(mask_files[0])
-    
-    # Copy to CNN infer folder
-    cnn_infer_dir = os.path.join(CNN_DIR, "infer")
-    os.makedirs(cnn_infer_dir, exist_ok=True)
-    cnn_input_path = os.path.join(cnn_infer_dir, os.path.basename(cropped_image_path))
-    shutil.copy(cropped_image_path, cnn_input_path)
-    
-    cnn_cmd = [
-        "python",
-        os.path.join(CNN_DIR, "inference.py"),
-        "--image_path", cnn_input_path,
-        "--model_path", CNN_MODEL
-    ]
-    
-    result = subprocess.run(cnn_cmd, capture_output=True, text=True, cwd=str(CNN_DIR))
-    
-    if result.returncode != 0:
-        st.error(f"❌ CNN Error: {result.stderr}")
-        st.stop()
-    
-    # Parse CNN output
+
+    # Step 2: Parse CNN output
     output_lines = result.stdout.strip().split('\n')
     prediction_grade = None
-    
+
+    import re
     for line in output_lines:
-        if "Predicted Grade" in line or "Grade" in line:
-            # Extract grade number
-            import re
-            match = re.search(r'Grade\s*[:\-]?\s*(\d)', line)
+        if "Predicted Singh Index Grade" in line or "Predicted" in line or "Grade" in line:
+            match = re.search(r'Grade\s*[:\-]?\s*(\d+)', line)
             if match:
                 prediction_grade = int(match.group(1))
                 break
+
+    if not prediction_grade:
+        st.warning("Could not parse grade from pipeline output.")
+        st.text_area("Pipeline Output", result.stdout + "\n\n" + result.stderr, height=300)
+        st.stop()
+
+    # Step 3: Store results
     st.session_state['last_prediction'] = prediction_grade
-    st.session_state['last_cropped_image'] = cropped_image_path
     st.session_state['last_original_image'] = temp_filepath
+
+    # Try to infer cropped image path:
+    # Keep your earlier convention: original stem + "_masked_cropped.png"
+    cropped_name = Path(temp_filepath).stem + "_masked_cropped.png"
+    cropped_image_path = os.path.join(CNN_DIR, "infer", cropped_name)
+    if os.path.exists(cropped_image_path):
+        st.session_state['last_cropped_image'] = cropped_image_path
+
+    st.text_area("📜 Pipeline Log", result.stdout, height=250)
     return prediction_grade
 
 def decision_logic(xray_grade, patient_pred, w_x=0.7, w_p=0.3):
