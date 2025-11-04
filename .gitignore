@@ -1,3 +1,35 @@
-predictions/
-temp_uploads/
-infer/
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Environments
+env/
+venv/
+.venv/
+.ipynb_checkpoints/
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Build and cache
+build/
+dist/
+*.egg-info/
+
+# OS
+.DS_Store
+
+# Models and datasets
+*.h5
+*.pt
+*.pkl
+*.onnx
+*.ckpt
+*.weights
+datasets/
+models/
