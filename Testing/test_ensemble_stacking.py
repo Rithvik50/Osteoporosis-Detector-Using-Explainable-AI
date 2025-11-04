@@ -11,7 +11,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 import joblib
 import os
-
+BASE_DIR = Path(__file__).resolve().parent.parent
+if str(BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(BASE_DIR))
 # Now import with the package structure
 from Ensemble_Stacking.ensemble_stacking import (
     MultiLabelEncoder,
