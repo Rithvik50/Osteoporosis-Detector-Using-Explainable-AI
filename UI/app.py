@@ -17,6 +17,7 @@ if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
 from Ensemble_Stacking.ensemble_stacking import StackingEnsembleOptuna, MultiLabelEncoder
+from gradcam_yolo import YOLOGradCAM, plot_gradcam_results, generate_gradcam_for_prediction
 
 import lime
 import lime.lime_tabular
@@ -384,7 +385,6 @@ def clear_prediction_state():
         if key in st.session_state:
             del st.session_state[key]
 
-
 # Load model
 model = load_model()
 
@@ -403,7 +403,7 @@ def patient_prediction(input_df):
     }
     return predicted_class
 
-def xray_prediction(xray_image, temp_filepath):
+def xray_prediction(temp_filepath):
     cmd = [sys.executable, PIPELINE_DIR, temp_filepath]
 
     # Run without shell for cross-platform safety
@@ -438,13 +438,41 @@ def xray_prediction(xray_image, temp_filepath):
     st.session_state['last_prediction'] = prediction_grade
     st.session_state['last_original_image'] = temp_filepath
 
-    # Try to infer cropped image path:
-    # Keep your earlier convention: original stem + "_masked_cropped.png"
+    # Try to infer cropped image path
     cropped_name = Path(temp_filepath).stem + "_masked_cropped.png"
     cropped_image_path = os.path.join(CNN_DIR, "infer", cropped_name)
     if os.path.exists(cropped_image_path):
         st.session_state['last_cropped_image'] = cropped_image_path
-
+    
+    # === NEW: Generate Grad-CAM visualization ===
+    try:
+        # Use the cropped image for Grad-CAM if available, otherwise use original
+        gradcam_input = cropped_image_path
+        # Generate Grad-CAM
+        if not os.path.exists(CNN_DIR/"gradcam_outputs"):
+            os.makedirs(CNN_DIR/"gradcam_outputs", exist_ok=True)
+        cam, overlay, heatmap, _ = generate_gradcam_for_prediction(
+            model_path=CNN_MODEL,
+            image_path=gradcam_input,
+            output_dir=os.path.join(CNN_DIR, "gradcam_outputs")
+        )
+        print("Exit Grad")
+        if cam is not None:
+            st.session_state['gradcam_data'] = {
+                'cam': cam,
+                'overlay': overlay,
+                'heatmap': heatmap,
+                'input_image': gradcam_input
+            }
+        else:
+            st.warning("Could not generate Grad-CAM visualization")
+            st.session_state['gradcam_data'] = None
+                
+    except Exception as e:
+        print("Failed to generate Grad")
+        st.warning(f"Grad-CAM generation failed: {e}")
+        st.session_state['gradcam_data'] = None
+    # === END NEW ===
     st.text_area("📜 Pipeline Log", result.stdout, height=250)
     return prediction_grade
 
@@ -1036,7 +1064,7 @@ if st.session_state.page == 'input':
                     with st.spinner("Generating prediction..."):
                         if None not in inputs.values():
                             patient_classification = patient_prediction(input_df)
-                        xray_classification = xray_prediction(Image.open(st.session_state['uploaded_xray']), st.session_state['temp_filepath'])
+                        xray_classification = xray_prediction(st.session_state['temp_filepath'])
     
                         switch_to_results()
                         st.rerun()
@@ -1209,6 +1237,13 @@ elif st.session_state.page == 'results':
                 st.error(traceback.format_exc())
                 lime_explainer = None
                 shap_explainer = None
+
+            # Grad-CAM Visualization
+            # st.markdown("<div class='explanation-section'>", unsafe_allow_html=True)
+            # st.markdown("<h2 style='color: white;'>Grad-CAM) Visualization</h2>", unsafe_allow_html=True)
+            # image_fig = plot_gradcam_results(st.session_state['uploaded_xray'], st.session_state['gradcam_data']['overlay'],
+            #                                  Image.open(st.session_state['gradcam_data']['heatmap']), singh_index)
+            # st.pyplot(image_fig, transparent=True)
 
             # LIME Explanation
             if lime_explainer:
