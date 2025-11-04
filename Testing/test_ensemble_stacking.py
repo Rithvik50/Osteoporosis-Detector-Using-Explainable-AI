@@ -1,6 +1,9 @@
 import sys
 from pathlib import Path
 
+project_root = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(project_root))
+
 import pytest
 import numpy as np
 import pandas as pd
@@ -9,13 +12,11 @@ from sklearn.preprocessing import LabelEncoder
 import joblib
 import os
 
-sys.path.append(str(Path(__file__).resolve().parent.parent))
-
+# Now import with the package structure
 from Ensemble_Stacking.ensemble_stacking import (
     MultiLabelEncoder,
     StackingEnsembleOptuna
 )
-
 
 # ==================== FIXTURES ====================
 
@@ -336,10 +337,9 @@ class TestStackingEnsembleOptuna:
         """Test saving and loading model"""
         model_path = tmp_path / "test_model.joblib"
 
-        # Save model
+
         joblib.dump(trained_model, model_path)
 
-        # Load model
         loaded_model = joblib.load(model_path)
 
         # Check model attributes
@@ -351,17 +351,13 @@ class TestStackingEnsembleOptuna:
         X_train, X_test, y_train, y_test = train_test_data
         model_path = tmp_path / "test_model.joblib"
 
-        # Get predictions before saving
         pred_before = trained_model.predict(X_test)
 
-        # Save and load
         joblib.dump(trained_model, model_path)
         loaded_model = joblib.load(model_path)
 
-        # Get predictions after loading
         pred_after = loaded_model.predict(X_test)
 
-        # Should be identical
         np.testing.assert_array_equal(pred_before, pred_after)
 
 
@@ -372,7 +368,7 @@ class TestIntegration:
 
     def test_end_to_end_prediction(self, sample_data):
         """Test complete pipeline from data to prediction"""
-        # Prepare data
+
         X = sample_data.drop('label', axis=1)
         y = sample_data['label']
 
@@ -489,7 +485,7 @@ class TestEdgeCases:
         X = df.drop('label', axis=1)
         y = df['label']
 
-        # Should work with small dataset
+
         model = StackingEnsembleOptuna(cv_folds=2, random_state=42)
         best_score, best_params = model.optimize(X, y, n_trials=2, timeout=20)
 
@@ -499,10 +495,8 @@ class TestEdgeCases:
         """Test prediction with missing features raises appropriate error"""
         X_train, X_test, y_train, y_test = train_test_data
 
-        # Remove a feature
         X_test_incomplete = X_test.drop(columns=['age'])
 
-        # Should raise an error
         with pytest.raises(Exception):
             trained_model.predict(X_test_incomplete)
 
@@ -514,10 +508,8 @@ class TestEdgeCases:
         X_test_extra = X_test.copy()
         X_test_extra['extra_feature'] = np.random.randn(len(X_test))
 
-        # Should work because ColumnTransformer drops unknown features
         predictions = trained_model.predict(X_test_extra)
 
-        # Should produce same predictions as without extra feature
         predictions_normal = trained_model.predict(X_test)
         np.testing.assert_array_equal(predictions, predictions_normal)
 
@@ -748,7 +740,6 @@ class TestDataValidation:
     def test_numerical_columns_present(self, sample_data):
         """Test that numerical columns are properly identified"""
         model = StackingEnsembleOptuna()
-
         X = sample_data.drop('label', axis=1)
 
         # Check that numerical columns exist in data
@@ -812,7 +803,7 @@ class TestReproducibility:
         model2.fit_best_model(X_train, y_train)
         pred2 = model2.predict(X_test)
 
-        # Predictions should be similar (might not be exactly same due to Optuna)
+        # Predictions should be similar
         # Check that at least 80% predictions match
         match_rate = np.mean(pred1 == pred2)
         assert match_rate > 0.8, f"Only {match_rate:.1%} predictions matched"
