@@ -1,9 +1,12 @@
-import os
+import os, sys
 import torch
 import pytest
 import numpy as np
 from PIL import Image
 from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent.parent
+if str(BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(BASE_DIR))
 from CNN.data.inference import YOLOv7Classifier, preprocess_image, load_model, predict
 
 # ==============================
