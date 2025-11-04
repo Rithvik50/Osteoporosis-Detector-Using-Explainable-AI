@@ -33,3 +33,6 @@ dist/
 *.weights
 datasets/
 models/
+predictions/
+temp_uploads/
+infer/
