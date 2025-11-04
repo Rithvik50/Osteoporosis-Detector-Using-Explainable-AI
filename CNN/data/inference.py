@@ -4,6 +4,7 @@ import torch
 import torch.nn as nn
 from torchvision import transforms
 from PIL import Image
+from pathlib import Path
 
 # ==============================================================
 # UTF-8 Safe Print (prevents UnicodeEncodeError under Streamlit)
@@ -139,15 +140,79 @@ def preprocess_image(image_path, img_size=640):
     safe_print("✅ Image preprocessing complete.")
     return input_tensor
 
+# ==============================================================
+# GRAD-CAM IMPLEMENTATION
+# ==============================================================
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+class GradCAM:
+    def __init__(self, model, target_layer):
+        self.model = model
+        self.target_layer = target_layer
+        self.gradients = None
+        self.activations = None
+        self.hook_layers()
+
+    def hook_layers(self):
+        def backward_hook(module, grad_input, grad_output):
+            self.gradients = grad_output[0]
+
+        def forward_hook(module, input, output):
+            self.activations = output
+
+        self.target_layer.register_forward_hook(forward_hook)
+        self.target_layer.register_backward_hook(backward_hook)
+
+    def generate(self, input_tensor, class_idx=None):
+        self.model.zero_grad()
+        output = self.model(input_tensor)
+
+        if class_idx is None:
+            class_idx = output.argmax(dim=1).item()
+
+        target = output[0, class_idx]
+        target.backward()
+
+        gradients = self.gradients.detach()
+        activations = self.activations.detach()
+        weights = gradients.mean(dim=[2, 3], keepdim=True)
+
+        cam = (weights * activations).sum(dim=1, keepdim=True)
+        cam = torch.relu(cam)
+        cam = torch.nn.functional.interpolate(cam, size=input_tensor.shape[2:], mode="bilinear", align_corners=False)
+        cam = cam.squeeze().cpu().numpy()
+
+        cam -= cam.min()
+        cam /= cam.max()
+        return cam
+    
+def overlay_heatmap(image_path, cam_map, output_filename="gradcam_result.jpg", alpha=0.5):
+    output_dir = Path(__file__).resolve().parent / "gradcam_outputs"
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    output_path = output_dir / output_filename
+
+    img = cv2.imread(image_path)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    cam_resized = cv2.resize(cam_map, (img.shape[1], img.shape[0]))
+    heatmap = cv2.applyColorMap(np.uint8(255 * cam_resized), cv2.COLORMAP_JET)
+    overlay = np.uint8(alpha * heatmap + (1 - alpha) * img)
+
+    cv2.imwrite(str(output_path), cv2.cvtColor(overlay, cv2.COLOR_RGB2BGR))
+    print(f"🧭 Grad-CAM heatmap saved to: {output_path}")
+    return str(output_path)
 
 # ==============================================================
 # PREDICTION
 # ==============================================================
-def predict(image_path, model_path, device, img_size=640):
+def predict(image_path, model_path, device, img_size=640, gradcam=True):
     model = load_model(model_path, device)
     input_tensor = preprocess_image(image_path, img_size).to(device)
 
-    safe_print("🚀 Running inference...")
+    print("🚀 Running inference...")
+    model.eval()
     with torch.no_grad():
         outputs = model(input_tensor)
         probs = torch.nn.functional.softmax(outputs, dim=1)
@@ -155,8 +220,17 @@ def predict(image_path, model_path, device, img_size=640):
         confidence = probs.max().item() * 100
 
     singh_grade = pred_class + 1
-    safe_print(f"🦴 Predicted Singh Index Grade: {singh_grade}")
-    safe_print(f"📊 Confidence: {confidence:.2f}%")
+    print(f"🦴 Predicted Singh Index Grade: {singh_grade}")
+    print(f"📊 Confidence: {confidence:.2f}%")
+
+    # Grad-CAM visualization
+    if gradcam:
+        print("🧠 Generating Grad-CAM heatmap...")
+        target_layer = model.stage4[-1].cv5  # Deepest conv block
+        cam = GradCAM(model, target_layer)
+        cam_map = cam.generate(input_tensor, pred_class)
+        overlay_path = overlay_heatmap(image_path, cam_map, output_filename="gradcam_output.jpg")
+        print(f"✅ Grad-CAM visualization saved to {overlay_path}")
 
     return singh_grade, confidence
 

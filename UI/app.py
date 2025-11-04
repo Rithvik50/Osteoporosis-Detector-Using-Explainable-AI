@@ -1207,6 +1207,14 @@ elif st.session_state.page == 'results':
                 lime_explainer = None
                 shap_explainer = None
 
+            # Grad-CAM Explanation
+            st.markdown("<div class='explanation-section'>", unsafe_allow_html=True)
+            st.markdown("<h2 style='color: white;'>🖼️ Grad-CAM Explanation</h2>", unsafe_allow_html=True)
+            st.markdown(
+                "<p style='color: rgba(255, 255, 255, 0.9);'>Visual explanation highlighting important regions in the X-ray image.</p>",
+                unsafe_allow_html=True)
+            st.image(Image.open(str(CNN_DIR/"gradcam_outputs"/"gradcam_output.jpg")), caption='Grad-CAM Result')
+            
             # LIME Explanation
             if lime_explainer:
                 st.markdown("<div class='explanation-section'>", unsafe_allow_html=True)
@@ -1298,6 +1306,12 @@ elif st.session_state.page == 'results':
                     <hr style='border: 1px solid rgba(255, 255, 255, 0.2); margin: 1.5rem 0;'>
                 </div>
                 """, unsafe_allow_html=True)
+            st.markdown("<div class='explanation-section'>", unsafe_allow_html=True)
+            st.markdown("<h2 style='color: white;'>🖼️ Grad-CAM Explanation</h2>", unsafe_allow_html=True)
+            st.markdown(
+                "<p style='color: rgba(255, 255, 255, 0.9);'>Visual explanation highlighting important regions in the X-ray image.</p>",
+                unsafe_allow_html=True)
+            st.image(Image.open(str(CNN_DIR/"gradcam_outputs"/"gradcam_output.jpg")), caption='Grad-CAM Result')
 
         st.markdown("<br><br>", unsafe_allow_html=True)
         if st.button("🔄 Make Another Prediction"):
