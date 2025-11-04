@@ -25,24 +25,15 @@ from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
 from catboost import CatBoostClassifier
 
-# Set up paths for importing Ensemble_Stacking
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Add project root to path if not already there
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
-
-# Import the required model classes
 try:
     from Ensemble_Stacking.ensemble_stacking import StackingEnsembleOptuna, MultiLabelEncoder
 except ImportError as e:
-    print(f"Failed to import from Ensemble_Stacking: {e}")
     sys.exit(1)
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
-
-
-
 
 
 class TestModelLoading(unittest.TestCase):
