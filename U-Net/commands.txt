@@ -8,9 +8,4 @@ unet.py --> Creates Binary Masks for each X-RAY image using _annotations.coco.js
 python unet.py --images_dir "train" --coco "train/_annotations.coco.json" --out_dir "train"
 
 
-Pridiction Output of binary Mask for image will be in Predictions directory
-
-
-
-
-
+Prediction Output of binary Mask for image will be in Predictions directory
