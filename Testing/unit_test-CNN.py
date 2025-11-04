@@ -4,7 +4,7 @@ import pytest
 import numpy as np
 from PIL import Image
 from pathlib import Path
-from inference import YOLOv7Classifier, preprocess_image, load_model, predict
+from CNN.data.inference import YOLOv7Classifier, preprocess_image, load_model, predict
 
 # ==============================
 # CONFIGURATION
