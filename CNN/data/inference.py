@@ -101,7 +101,7 @@ def load_model(model_path, device):
     """
     Loads YOLOv7Classifier with weights from a .pt or .pth checkpoint.
     """
-    safe_print("🔄 Loading CNN model...")
+    safe_print("Loading CNN model...")
     checkpoint = torch.load(model_path, map_location=device)
 
     model = YOLOv7Classifier(num_classes=6)
@@ -119,7 +119,7 @@ def load_model(model_path, device):
         model = checkpoint
 
     model.eval()
-    safe_print("✅ Model loaded successfully.")
+    safe_print("Model loaded successfully.")
     return model
 
 
@@ -127,7 +127,7 @@ def load_model(model_path, device):
 # IMAGE PREPROCESSING
 # ==============================================================
 def preprocess_image(image_path, img_size=640):
-    safe_print("🖼️  Preprocessing input image...")
+    safe_print("Preprocessing input image...")
     image = Image.open(image_path).convert("RGB")
 
     transform = transforms.Compose([
@@ -137,7 +137,7 @@ def preprocess_image(image_path, img_size=640):
                              std=[0.229, 0.224, 0.225])
     ])
     input_tensor = transform(image).unsqueeze(0)
-    safe_print("✅ Image preprocessing complete.")
+    safe_print("Image preprocessing complete.")
     return input_tensor
 
 # ==============================================================
