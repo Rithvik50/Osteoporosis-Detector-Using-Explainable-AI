@@ -38,3 +38,4 @@ predictions/
 original_uploads/
 infer/
 gradcam_outputs/
+xray_temp_images/

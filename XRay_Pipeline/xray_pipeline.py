@@ -8,9 +8,10 @@ from pathlib import Path
 # CONFIGURATION
 # ==========================================================
 BASE_DIR = Path(__file__).resolve().parent
-UNET_DIR = BASE_DIR / "U-Net"
+UNET_DIR = BASE_DIR / "UNet"
 CNN_DIR = BASE_DIR / "CNN"
 PRED_DIR = UNET_DIR / "predictions"
+os.makedirs(PRED_DIR, exist_ok=True)
 UNET_MODEL = UNET_DIR / "models" / "best.pt"
 CNN_MODEL = CNN_DIR / "models" / "best.pt"
 
@@ -61,6 +62,7 @@ print(f"[INFO] Found mask: {mask_file}")
 # ==========================================================
 # STEP 3: Multiply mask with original + crop for CNN
 # ==========================================================
+os.makedirs(CNN_DIR / "infer", exist_ok=True)
 cropped_output = CNN_DIR / "infer" / f"{basename}_masked_cropped.png"
 
 print("[INFO] Generating masked & cropped image...")

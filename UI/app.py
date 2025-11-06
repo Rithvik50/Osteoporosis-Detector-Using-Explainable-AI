@@ -24,13 +24,12 @@ import shap
 # Page config
 st.set_page_config(page_title="Osteoporosis Predictor", layout="wide")
 
-UNET_DIR = BASE_DIR/"XRay_Pipeline"/"U-Net"
+UNET_DIR = BASE_DIR/"XRay_Pipeline"/"UNet"
 CNN_DIR = BASE_DIR/"XRay_Pipeline"/"CNN"
 PIPELINE_DIR = os.path.join(BASE_DIR, "XRay_Pipeline", "xray_pipeline.py")
 UNET_MODEL = os.path.join(UNET_DIR, "models", "best.pt")
 CNN_MODEL = os.path.join(CNN_DIR, "models", "best.pt")
 PREDICTIONS_DIR = os.path.join(UNET_DIR, "predictions")
-os.makedirs(PREDICTIONS_DIR, exist_ok=True)
 TEMP_UPLOAD_DIR = os.path.join(UNET_DIR, "original_uploads")
 os.makedirs(TEMP_UPLOAD_DIR, exist_ok=True)
 bg_path = BASE_DIR/"UI"/"static"/"bg.png"

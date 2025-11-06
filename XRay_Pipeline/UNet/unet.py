@@ -33,7 +33,7 @@ def load_coco(coco_path):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--images_dir", required=True, help="folder containing images (e.g., U-Net/train)")
+    ap.add_argument("--images_dir", required=True, help="folder containing images (e.g., UNet/train)")
     ap.add_argument("--coco", required=True, help="path to _annotations.coco.json in the same folder")
     ap.add_argument("--out_dir", default="", help="optional folder for masks; default saves next to originals")
     args = ap.parse_args()
