@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 try:
-    from CNN.data.inference import YOLOv7Classifier, preprocess_image, load_model, predict
+    from XRay_Pipeline.CNN.inference import YOLOv7Classifier, preprocess_image, load_model, predict
 except ImportError as e:
     sys.exit(1)
 if str(BASE_DIR) not in sys.path:

@@ -19,7 +19,7 @@ CNN_MODEL = CNN_DIR / "models" / "best.pt"
 # ==========================================================
 if len(sys.argv) < 2:
     print("[ERROR] No input image path provided.")
-    print("Usage: python pipeline.py path/to/image.jpg")
+    print("Usage: python xray_pipeline.py path/to/image.jpg")
     sys.exit(1)
 
 input_image = Path(sys.argv[1]).resolve()

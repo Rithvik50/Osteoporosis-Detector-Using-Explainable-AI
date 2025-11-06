@@ -15,7 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
-from Ensemble_Stacking.ensemble_stacking import StackingEnsembleOptuna, MultiLabelEncoder
+from Patient_Info_Pipeline.Ensemble_Stacking.ensemble_stacking import StackingEnsembleOptuna, MultiLabelEncoder
 
 import lime
 import lime.lime_tabular
@@ -24,9 +24,9 @@ import shap
 # Page config
 st.set_page_config(page_title="Osteoporosis Predictor", layout="wide")
 
-UNET_DIR = BASE_DIR/"U-Net"
-CNN_DIR = BASE_DIR/"CNN"
-PIPELINE_DIR = os.path.join(BASE_DIR, "pipeline.py")
+UNET_DIR = BASE_DIR/"XRay_Pipeline"/"U-Net"
+CNN_DIR = BASE_DIR/"XRay_Pipeline"/"CNN"
+PIPELINE_DIR = os.path.join(BASE_DIR, "XRay_Pipeline", "xray_pipeline.py")
 UNET_MODEL = os.path.join(UNET_DIR, "models", "best.pt")
 CNN_MODEL = os.path.join(CNN_DIR, "models", "best.pt")
 PREDICTIONS_DIR = os.path.join(UNET_DIR, "predictions")
@@ -37,14 +37,14 @@ bg_path = BASE_DIR/"UI"/"static"/"bg.png"
 
 @st.cache_resource
 def load_model():
-    model = joblib.load(BASE_DIR/"Ensemble_Stacking"/"stacking_ensemble.joblib")
+    model = joblib.load(BASE_DIR/"Patient_Info_Pipeline"/"Ensemble_Stacking"/"stacking_ensemble.joblib")
     return model
 
 
 @st.cache_resource
 def load_training_data():
     """Load training data for LIME/SHAP explainers"""
-    df = pd.read_csv(BASE_DIR/"Ensemble_Stacking"/"patient_info_dataset.csv")
+    df = pd.read_csv(BASE_DIR/"Patient_Info_Pipeline"/"Ensemble_Stacking"/"patient_info_dataset.csv")
 
     X = df.drop('label', axis=1)
 

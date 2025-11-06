@@ -15,7 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 try:
-    from Ensemble_Stacking.ensemble_stacking import StackingEnsembleOptuna, MultiLabelEncoder
+    from Patient_Info_Pipeline.Ensemble_Stacking.ensemble_stacking import StackingEnsembleOptuna, MultiLabelEncoder
 except ImportError as e:
     sys.exit(1)
 if str(BASE_DIR) not in sys.path:

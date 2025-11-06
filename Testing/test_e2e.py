@@ -29,7 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 try:
-    from Ensemble_Stacking.ensemble_stacking import StackingEnsembleOptuna, MultiLabelEncoder
+    from Patient_Info_Pipeline.Ensemble_Stacking.ensemble_stacking import StackingEnsembleOptuna, MultiLabelEncoder
 except ImportError as e:
     sys.exit(1)
 if str(BASE_DIR) not in sys.path:
@@ -41,9 +41,9 @@ class TestModelLoading(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        cls.model_path = BASE_DIR.parent / "Ensemble_Stacking" / "stacking_ensemble.joblib"
-        cls.data_path = BASE_DIR.parent / "Ensemble_Stacking" / "patient_info_dataset.csv"
-    
+        cls.model_path = BASE_DIR.parent / "Patient_Info_Pipeline" / "Ensemble_Stacking" / "stacking_ensemble.joblib"
+        cls.data_path = BASE_DIR.parent / "Patient_Info_Pipeline" / "Ensemble_Stacking" / "patient_info_dataset.csv"
+
     def test_model_exists(self):
         """Verify model file exists"""
         self.assertTrue(self.model_path.exists(), 
@@ -54,7 +54,7 @@ class TestModelLoading(unittest.TestCase):
         try:
             print(f"Attempting to load model from: {self.model_path}")
             print(f"Model file exists: {self.model_path.exists()}")
-            from Ensemble_Stacking.ensemble_stacking import StackingEnsembleOptuna
+            from Patient_Info_Pipeline.Ensemble_Stacking.ensemble_stacking import StackingEnsembleOptuna
             print("Successfully imported StackingEnsembleOptuna class")
             model = joblib.load(self.model_path)
             self.assertIsNotNone(model)
@@ -182,7 +182,7 @@ class TestPredictionPipeline(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        cls.model_path = BASE_DIR.parent / "Ensemble_Stacking" / "stacking_ensemble.joblib"
+        cls.model_path = BASE_DIR.parent / "Patient_Info_Pipeline" / "Ensemble_Stacking" / "stacking_ensemble.joblib"
         cls.features = [
             "age", "sex", "height_cm", "weight_kg", "bmi",
             "waist_cm", "hip_cm", "waist_hip_ratio",
@@ -364,7 +364,7 @@ class TestExplainabilityComponents(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        cls.data_path = BASE_DIR.parent / "Ensemble_Stacking" / "patient_info_dataset.csv"
+        cls.data_path = BASE_DIR.parent / "Patient_Info_Pipeline" / "Ensemble_Stacking" / "patient_info_dataset.csv"
         
         try:
             df = pd.read_csv(cls.data_path)
