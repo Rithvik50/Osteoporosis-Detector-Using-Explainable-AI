@@ -10,8 +10,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent
 UNET_DIR = BASE_DIR / "UNet"
 CNN_DIR = BASE_DIR / "CNN"
-PRED_DIR = UNET_DIR / "predictions"
-os.makedirs(PRED_DIR, exist_ok=True)
+TEMP_DIR = BASE_DIR / "temp"
 UNET_MODEL = UNET_DIR / "models" / "best.pt"
 CNN_MODEL = CNN_DIR / "models" / "best.pt"
 
@@ -39,7 +38,8 @@ try:
         sys.executable, str(UNET_DIR / "infer_crop.py"),
         "--model_path", str(UNET_MODEL),
         "--image_path", str(input_image),
-        "--save_overlay"
+        "--save_overlay",
+        "--output_dir", str(TEMP_DIR)
     ], check=True)
 except subprocess.CalledProcessError:
     print("[ERROR] UNET inference failed.")
@@ -51,10 +51,18 @@ print("[INFO] UNET inference completed.")
 # STEP 2: Locate generated mask
 # ==========================================================
 basename = input_image.stem
-mask_file = PRED_DIR / f"{basename}_predicted_mask.png"
+mask_file = TEMP_DIR / f"{basename}_predicted_mask.png"
 
 if not mask_file.exists():
     print(f"[ERROR] Mask not found: {mask_file}")
+    try:
+        # Diagnostic: list files in the TEMP_DIR to help debugging
+        files = list(TEMP_DIR.iterdir())
+        print(f"[DEBUG] Contents of {TEMP_DIR}:")
+        for f in files:
+            print(f"  - {f}")
+    except Exception:
+        pass
     sys.exit(1)
 
 print(f"[INFO] Found mask: {mask_file}")
@@ -62,8 +70,7 @@ print(f"[INFO] Found mask: {mask_file}")
 # ==========================================================
 # STEP 3: Multiply mask with original + crop for CNN
 # ==========================================================
-os.makedirs(CNN_DIR / "infer", exist_ok=True)
-cropped_output = CNN_DIR / "infer" / f"{basename}_masked_cropped.png"
+cropped_output = TEMP_DIR / f"{basename}_masked_cropped.png"
 
 print("[INFO] Generating masked & cropped image...")
 try:

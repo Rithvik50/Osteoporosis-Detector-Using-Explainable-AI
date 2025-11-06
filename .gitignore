@@ -34,8 +34,4 @@ dist/
 datasets/
 
 # Temp directories
-predictions/
-original_uploads/
-infer/
-gradcam_outputs/
-xray_temp_images/
+temp/

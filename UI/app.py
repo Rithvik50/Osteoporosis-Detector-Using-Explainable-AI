@@ -29,9 +29,8 @@ CNN_DIR = BASE_DIR/"XRay_Pipeline"/"CNN"
 PIPELINE_DIR = os.path.join(BASE_DIR, "XRay_Pipeline", "xray_pipeline.py")
 UNET_MODEL = os.path.join(UNET_DIR, "models", "best.pt")
 CNN_MODEL = os.path.join(CNN_DIR, "models", "best.pt")
-PREDICTIONS_DIR = os.path.join(UNET_DIR, "predictions")
-TEMP_UPLOAD_DIR = os.path.join(UNET_DIR, "original_uploads")
-os.makedirs(TEMP_UPLOAD_DIR, exist_ok=True)
+TEMP_DIR = BASE_DIR/"XRay_Pipeline"/"temp"
+os.makedirs(str(TEMP_DIR), exist_ok=True)
 bg_path = BASE_DIR/"UI"/"static"/"bg.png"
 
 @st.cache_resource
@@ -438,7 +437,7 @@ def xray_prediction(temp_filepath):
 
     # Try to infer cropped image path
     cropped_name = Path(temp_filepath).stem + "_masked_cropped.png"
-    cropped_image_path = os.path.join(CNN_DIR, "infer", cropped_name)
+    cropped_image_path = os.path.join(TEMP_DIR, cropped_name)
     if os.path.exists(cropped_image_path):
         st.session_state['last_cropped_image'] = cropped_image_path
     st.text_area("📜 Pipeline Log", result.stdout, height=250)
@@ -873,9 +872,8 @@ if st.session_state.page == 'input':
                 st.image(xray_image, caption="Uploaded X-Ray")
                 
                 # Save uploaded file
-                timestamp = int(time.time())
-                temp_filename = f"upload_{timestamp}_{uploaded_xray.name}"
-                temp_filepath = os.path.join(TEMP_UPLOAD_DIR, temp_filename)
+                temp_filename = "xray.{}".format(uploaded_xray.name.split('.')[-1])
+                temp_filepath = os.path.join(TEMP_DIR, temp_filename)
                 
                 with open(temp_filepath, "wb") as f:
                     f.write(uploaded_xray.getbuffer())
@@ -1212,7 +1210,7 @@ elif st.session_state.page == 'results':
             st.markdown(
                 "<p style='color: rgba(255, 255, 255, 0.9);'>Visual explanation highlighting important regions in the X-ray image.</p>",
                 unsafe_allow_html=True)
-            st.image(Image.open(str(CNN_DIR/"gradcam_outputs"/"gradcam_output.jpg")), caption='Grad-CAM Result')
+            st.image(Image.open(str(TEMP_DIR / "gradcam_output.jpg")), caption='Grad-CAM Result')
             
             # LIME Explanation
             if lime_explainer:
@@ -1310,7 +1308,7 @@ elif st.session_state.page == 'results':
             st.markdown(
                 "<p style='color: rgba(255, 255, 255, 0.9);'>Visual explanation highlighting important regions in the X-ray image.</p>",
                 unsafe_allow_html=True)
-            st.image(Image.open(str(CNN_DIR/"gradcam_outputs"/"gradcam_output.jpg")), caption='Grad-CAM Result')
+            st.image(Image.open(str(TEMP_DIR / "gradcam_output.jpg")), caption='Grad-CAM Result')
 
         st.markdown("<br><br>", unsafe_allow_html=True)
         if st.button("🔄 Make Another Prediction"):

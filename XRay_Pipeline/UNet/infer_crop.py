@@ -112,7 +112,7 @@ def main():
     parser = argparse.ArgumentParser(description="Run inference on trained U-Net model")
     parser.add_argument("--model_path", required=True, help="Path to trained model (.pt file)")
     parser.add_argument("--image_path", required=True, help="Path to input image")
-    parser.add_argument("--output_dir", default="predictions", help="Directory to save predictions")
+    parser.add_argument("--output_dir", default="temp", help="Directory to save predictions")
     parser.add_argument("--img_size", type=int, default=512, help="Input image size")
     parser.add_argument("--threshold", type=float, default=0.5, help="Threshold for binary mask")
     parser.add_argument("--save_overlay", action="store_true", help="Save overlay of mask on original image")

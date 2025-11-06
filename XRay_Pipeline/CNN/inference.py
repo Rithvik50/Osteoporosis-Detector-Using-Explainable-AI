@@ -187,12 +187,9 @@ class GradCAM:
         cam -= cam.min()
         cam /= cam.max()
         return cam
-    
-def overlay_heatmap(image_path, cam_map, output_filename="gradcam_result.jpg", alpha=0.5):
-    output_dir = Path(__file__).resolve().parent / "gradcam_outputs"
-    output_dir.mkdir(parents=True, exist_ok=True)
 
-    output_path = output_dir / output_filename
+def overlay_heatmap(image_path, cam_map, output_filename="gradcam_result.jpg", alpha=0.5):
+    output_path = Path(__file__).resolve().parent.parent / "temp" / output_filename
 
     img = cv2.imread(image_path)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
