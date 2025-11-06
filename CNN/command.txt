@@ -1,0 +1,3 @@
+python train.py --epochs 30 --train-dir train --val-dir val
+python inference.py --image_path "path/to/hip_xray.jpg" --model_path "runs/best.pt"
+

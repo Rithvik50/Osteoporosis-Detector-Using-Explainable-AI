@@ -11,9 +11,8 @@ BASE_DIR = Path(__file__).resolve().parent
 UNET_DIR = BASE_DIR / "U-Net"
 CNN_DIR = BASE_DIR / "CNN"
 PRED_DIR = UNET_DIR / "predictions"
-
-UNET_MODEL = UNET_DIR / "checkpoints" / "best.pt"
-CNN_MODEL = CNN_DIR / "data" / "runs" / "train" / "best.pt"
+UNET_MODEL = UNET_DIR / "models" / "best.pt"
+CNN_MODEL = CNN_DIR / "models" / "best.pt"
 
 # ==========================================================
 # INPUT VALIDATION
@@ -62,7 +61,7 @@ print(f"[INFO] Found mask: {mask_file}")
 # ==========================================================
 # STEP 3: Multiply mask with original + crop for CNN
 # ==========================================================
-cropped_output = CNN_DIR / "data" / "infer" / f"{basename}_masked_cropped.png"
+cropped_output = CNN_DIR / "infer" / f"{basename}_masked_cropped.png"
 
 print("[INFO] Generating masked & cropped image...")
 try:
@@ -85,7 +84,7 @@ print(f"[INFO] Cropped masked image saved to {cropped_output}")
 print("[INFO] Running CNN inference on cropped image...")
 try:
     subprocess.run([
-        sys.executable, str(CNN_DIR / "data" / "inference.py"),
+        sys.executable, str(CNN_DIR / "inference.py"),
         "--image_path", str(cropped_output),
         "--model_path", str(CNN_MODEL)
     ], check=True)

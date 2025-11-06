@@ -185,7 +185,7 @@ def main():
     ap.add_argument("--epochs", type=int, default=80)
     ap.add_argument("--lr", type=float, default=1e-3)
     ap.add_argument("--val_frac", type=float, default=0.2)
-    ap.add_argument("--out", type=str, default="checkpoints")
+    ap.add_argument("--out", type=str, default="models")
     args = ap.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

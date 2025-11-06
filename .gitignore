@@ -32,8 +32,9 @@ dist/
 *.ckpt
 *.weights
 datasets/
-models/
+
+# Temp directories
 predictions/
-temp_uploads/
+original_uploads/
 infer/
 gradcam_outputs/

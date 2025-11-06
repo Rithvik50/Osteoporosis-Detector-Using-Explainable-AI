@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import subprocess
 import os
 import time
-import shutil
 from PIL import Image
 from pathlib import Path
 import sys
@@ -26,12 +25,13 @@ import shap
 st.set_page_config(page_title="Osteoporosis Predictor", layout="wide")
 
 UNET_DIR = BASE_DIR/"U-Net"
-CNN_DIR = BASE_DIR/"CNN"/"data"
+CNN_DIR = BASE_DIR/"CNN"
 PIPELINE_DIR = os.path.join(BASE_DIR, "pipeline.py")
-UNET_MODEL = os.path.join(UNET_DIR, "checkpoints", "best.pt")
-CNN_MODEL = os.path.join(CNN_DIR, "runs", "train", "best.pt")
+UNET_MODEL = os.path.join(UNET_DIR, "models", "best.pt")
+CNN_MODEL = os.path.join(CNN_DIR, "models", "best.pt")
 PREDICTIONS_DIR = os.path.join(UNET_DIR, "predictions")
-TEMP_UPLOAD_DIR = os.path.join(UNET_DIR, "temp_uploads")
+os.makedirs(PREDICTIONS_DIR, exist_ok=True)
+TEMP_UPLOAD_DIR = os.path.join(UNET_DIR, "original_uploads")
 os.makedirs(TEMP_UPLOAD_DIR, exist_ok=True)
 bg_path = BASE_DIR/"UI"/"static"/"bg.png"
 
