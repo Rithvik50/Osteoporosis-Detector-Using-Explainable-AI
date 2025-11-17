@@ -24,13 +24,7 @@ dist/
 # OS
 .DS_Store
 
-# Models and datasets
-*.h5
-*.pt
-*.pkl
-*.onnx
-*.ckpt
-*.weights
+# Datasets
 datasets/
 
 # Temp directories
