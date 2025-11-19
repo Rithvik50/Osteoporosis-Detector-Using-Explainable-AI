@@ -22,7 +22,11 @@ We aim to utilize dual methodologies for detecting.
 ![Architecture Diagram](Misc/Architecture_Diagram.png "Architecture Diagram")
 
 ## Execution
-Navigate into the (`/UI/`) directory and run the command:
-```bash
-streamlit run app.py
-```
+1) Navigate to the home directory and run the command to download the dependencies(you must be in Python 3.10):
+   ```bash
+   pip3 install -r requirements.txt
+   ```
+2) Navigate into the (`/UI/`) directory and run the command:
+   ```bash
+   streamlit run app.py
+   ```
