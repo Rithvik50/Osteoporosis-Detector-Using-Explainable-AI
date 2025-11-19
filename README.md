@@ -22,7 +22,7 @@ We aim to utilize dual methodologies for detecting.
 ![Architecture Diagram](Misc/Architecture_Diagram.png "Architecture Diagram")
 
 ## Execution
-Navigate into the (`/UI/`) directory and run:
+Navigate into the (`/UI/`) directory and run the command:
 ```bash
 streamlit run app.py
 ```
