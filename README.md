@@ -20,3 +20,9 @@ We aim to utilize dual methodologies for detecting.
 •⁠  ⁠ResNet-34 for X-ray classification based off Singh Index.
 
 ![Architecture Diagram](Misc/Architecture_Diagram.png "Architecture Diagram")
+
+## Execution
+Navigate into the ('/UI/') directory and run:
+'''bash
+streamlit run app.py
+'''
