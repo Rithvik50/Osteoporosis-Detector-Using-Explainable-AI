@@ -198,7 +198,7 @@ def overlay_heatmap(image_path, cam_map, output_filename="gradcam_result.jpg", a
     overlay = np.uint8(alpha * heatmap + (1 - alpha) * img)
 
     cv2.imwrite(str(output_path), cv2.cvtColor(overlay, cv2.COLOR_RGB2BGR))
-    print(f"🧭 Grad-CAM heatmap saved to: {output_path}")
+    print(f"Grad-CAM heatmap saved to: {output_path}")
     return str(output_path)
 
 # ==============================================================
@@ -208,7 +208,7 @@ def predict(image_path, model_path, device, img_size=640, gradcam=True):
     model = load_model(model_path, device)
     input_tensor = preprocess_image(image_path, img_size).to(device)
 
-    print("🚀 Running inference...")
+    print("Running inference...")
     model.eval()
     with torch.no_grad():
         outputs = model(input_tensor)
@@ -217,17 +217,17 @@ def predict(image_path, model_path, device, img_size=640, gradcam=True):
         confidence = probs.max().item() * 100
 
     singh_grade = pred_class + 1
-    print(f"🦴 Predicted Singh Index Grade: {singh_grade}")
-    print(f"📊 Confidence: {confidence:.2f}%")
+    print(f"Predicted Singh Index Grade: {singh_grade}")
+    print(f"Confidence: {confidence:.2f}%")
 
     # Grad-CAM visualization
     if gradcam:
-        print("🧠 Generating Grad-CAM heatmap...")
+        print("Generating Grad-CAM heatmap...")
         target_layer = model.stage4[-1].cv5  # Deepest conv block
         cam = GradCAM(model, target_layer)
         cam_map = cam.generate(input_tensor, pred_class)
         overlay_path = overlay_heatmap(image_path, cam_map, output_filename="gradcam_output.jpg")
-        print(f"✅ Grad-CAM visualization saved to {overlay_path}")
+        print(f"Grad-CAM visualization saved to {overlay_path}")
 
     return singh_grade, confidence
 
