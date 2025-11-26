@@ -16,8 +16,8 @@ Predicting early osteoporosis is vital. We aim to cover this by developing a scr
 We aim to utilize dual methodologies for detecting.
 
 •⁠  ⁠An efficient ensemble stacking utilizing Optuna for hyperparameter search
-
-•⁠  ⁠ResNet-34 for X-ray classification based off Singh Index.
+•⁠  U-Net for image segmentation to crop out the hip portion of the x-ray.
+•⁠  ⁠YOLOv7 CNN for X-ray classification based off Singh Index.
 
 ![Architecture Diagram](Misc/Architecture_Diagram.png "Architecture Diagram")
 
