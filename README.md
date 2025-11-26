@@ -39,5 +39,5 @@ We hope to continue work on this project by implementing:
 
 •⁠  ⁠A deployable application that can be used on any device
 
-## Developers
+## Project Poster
 ![Project Poster](Misc/Poster.png "Project Poster")
