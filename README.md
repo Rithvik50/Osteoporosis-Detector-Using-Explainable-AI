@@ -23,13 +23,13 @@ We aim to utilize dual methodologies for detecting.
 ![Architecture Diagram](Misc/Architecture_Diagram.png "Architecture Diagram")
 
 ## Execution
-1) Navigate to the home directory and run the command to download the dependencies(you must be in Python 3.10):
+1) Navigate to the home directory and run the command to download the dependencies (this project targets Python 3.10):
    ```bash
-   pip3 install -r requirements.txt
+   uv sync
    ```
 2) Navigate into the (`/UI/`) directory and run the command:
    ```bash
-   streamlit run app.py
+   uv run streamlit run app.py
    ```
 
 ## Future Work
